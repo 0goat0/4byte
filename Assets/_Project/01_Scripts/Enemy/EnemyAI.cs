@@ -33,6 +33,7 @@ public class EnemyAI : NetworkBehaviour
 
     [Header("Detection")]
     [SerializeField] private float attackRange;
+    [SerializeField] private float detectRange;
 
 
     //현재 상태 체크

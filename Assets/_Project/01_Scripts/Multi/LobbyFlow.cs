@@ -164,7 +164,7 @@ public class LobbyFlow : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log("Reloading Scene...");
 
         // 4. 씬 리로드
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneChanger.LoadScene(SceneChanger.GetActiveScene().buildIndex);
     }
 
     // ==================================================================================

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Fusion;
+using System.Collections;
 
 public interface IEnemyState
 {
@@ -71,9 +72,16 @@ public class EnemyAI : NetworkBehaviour
             StateType = EnemyStateType.Idle;
         }
         currentState = stateDic[StateType];
+        //테스트
+        StartCoroutine(DespawnEnemy());
         currentState.Enter(this);
     }
-
+    //테스트 코드
+    IEnumerator DespawnEnemy()
+    {
+        yield return new WaitForSeconds(1f);
+        //Runner.Despawn(Object);
+    }
     public void ChangeState(EnemyStateType state)
     {
         if(StateType == state)

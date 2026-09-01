@@ -3,6 +3,11 @@
 ex) SaveLoad 시스템 구현
 - 
 
+## 관련 노션 페이지
+<!-- 작업한 스크립트 설명 혹은 기능 설명이 있는 노션페이지. 데일리 스크럼 or 프로젝트 진행 관리 페이지 -->
+ex) [공유 페이지에 대한 설명](페이지 링크)
+- 
+
 ## 변경 내용
 <!-- 실제로 작업한 내용들을 핵심만 간단히 작성 -->
 ex) SaveLoadManager 작성, PlayerSaveController.cs 에서 현재 Player 데이터를 불러와 SaveLoadManager에 저장
@@ -11,7 +16,7 @@ ex) SaveLoadManager 작성, PlayerSaveController.cs 에서 현재 Player 데이�
 - 
 
 ## 테스트 방법
-<!-- 확인한 항목에 체크 -->
+<!-- PR 작성 전 테스트 후 확인한 항목에 체크 -->
 
 - [ ] Unity Editor에서 Play 실행 확인
 - [ ] 변경된 기능 직접 동작 확인
@@ -21,12 +26,12 @@ ex) SaveLoadManager 작성, PlayerSaveController.cs 에서 현재 Player 데이�
 
 ## 영향 범위
 <!-- 이 PR이 영향을 줄 수 있는 시스템이나 파일 -->
-
-- UI
-- Scene
-- Input
-- Settings
-- Game Flow
+ex) `Assets/_Project/01_Scripts/Camera/CameraController.cs` - 구현 및 수정 파일
+ex) Input or Camera - 구현 시스템
+- 
+- 
+- 
+- 
 
 ## 스크린샷 / 영상
 <!-- UI, 연출, 화면 변경이 있으면 첨부 -->

@@ -60,7 +60,7 @@ public class EnemySpawner : NetworkBehaviour
             TrySpawnEnemyAroundBuilding();
             spawned++;
 
-            yield return new WaitForSeconds(1f);
+            yield return null;
         }
 
         //초기 소환 완료

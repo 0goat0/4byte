@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 6484218380315879640}
   - component: {fileID: 8221720981853830745}
   - component: {fileID: -7701792150844923293}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: TestEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -136,7 +136,7 @@ MonoBehaviour:
   detectRange: 4
   targetLayerMask:
     serializedVersion: 2
-    m_Bits: 128
+    m_Bits: 64
   _StateType: 0
   _CurrentHp: 0
   _Target: {fileID: 0}

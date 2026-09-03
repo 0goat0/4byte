@@ -13,11 +13,20 @@ public class EnemyDetectState : IEnemyState
 
     public void Exit(EnemyAI enemy)
     {
-        
+        enemy.agent.isStopped = false;
     }
 
     public void Tick(EnemyAI enemy)
     {
-       
+        if(enemy.Target == null)
+        {
+            enemy.ChangeState(EnemyStateType.Idle);
+            return;
+        }
+
+        if (enemy.DetectTimer.Expired(enemy.Runner))
+        {
+            enemy.ChangeState(EnemyStateType.Chase);
+        }
     }
 }

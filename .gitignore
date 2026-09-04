@@ -104,3 +104,5 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+# 비공유 폴더
+/[Aa]ssets/_Project/04_Art/Unity_Asset/

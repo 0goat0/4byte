@@ -1496,7 +1496,7 @@ MonoBehaviour:
   exitButton: {fileID: 1143187142245895484}
   roomStatusText: {fileID: 5700134174741951911}
   playerListText: {fileID: 3833557069674420691}
-  gameSceneBuildIndex: 1
+  gameSceneBuildIndex: 3
 --- !u!4 &1130498332
 Transform:
   m_ObjectHideFlags: 0

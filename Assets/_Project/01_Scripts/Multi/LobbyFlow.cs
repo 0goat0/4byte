@@ -37,6 +37,8 @@ public class LobbyFlow : MonoBehaviour, INetworkRunnerCallbacks
     [Header("Scene")]
     [SerializeField] private int gameSceneBuildIndex = 1;
 
+    private PooledNetworkObjectProvider _pooledProvider;
+
     private void Awake()
     {
         ShowMainLobby("Ready to connect.");
@@ -78,6 +80,9 @@ public class LobbyFlow : MonoBehaviour, INetworkRunnerCallbacks
         // 3. 새 Runner 생성 (프리팹에서 인스턴스화)
         _currentRunner = Instantiate(runnerPrefab);
 
+        _pooledProvider = _currentRunner.gameObject.AddComponent<PooledNetworkObjectProvider>();
+        _pooledProvider.SetMaxPoolCount(30);
+
         // 중요: 이 LobbyFlow 스크립트가 콜백(PlayerJoined 등)을 받을 수 있도록 등록
         _currentRunner.AddCallbacks(this);
         _currentRunner.ProvideInput = true;
@@ -88,6 +93,7 @@ public class LobbyFlow : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = mode,
             SessionName = sessionName,
             SceneManager = _currentRunner.GetComponent<NetworkSceneManagerDefault>(),
+            ObjectProvider = _pooledProvider
         };
 
         // 5. Fusion 시작

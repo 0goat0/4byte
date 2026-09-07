@@ -7,10 +7,7 @@ public class SceneChanger : MonoBehaviour
 {
     public Animator transition;
     public float transitionTime = 1f;
-    void Start()
-    {
-        //LoadScene("AppScene");
-    }
+
 
     void Update()
     {

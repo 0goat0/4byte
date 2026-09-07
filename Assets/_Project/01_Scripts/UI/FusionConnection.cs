@@ -32,7 +32,6 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         }
         if (connectOnAwake == true)
         {
-            // 세션 이름을 공백 호스트 전용으로 처리가 필요
             CreateSession();
         }
 
@@ -78,7 +77,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
-    // 리스트에서 방을 선택해 참가자(Client)로 접속
+    // 리스트에서 방 선택 Client 접속
     public async void ConnectToClientSession(string sessionName)
     {
         // 로비 실행을 취소 (NameServer error)
@@ -116,7 +115,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         }
     }
 
-    // 방을 개설하고 호스트(Host) 역할을 맡는 메서드
+    // 방을 개설하고 호스트 역할을 맡는 메서드
     public async void CreateSession()
     {
         // 로비가 아니면 방 생성 차단
@@ -213,14 +212,14 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 
-    // Host/Client 모드에서는 호스트에서만 Spawn 권한
+    // 호스트 Spawn 권한
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        // Host/Client 모드에서는 호스트 서버가 오브젝트 생성을 주도
+        // 호스트 오브젝트 생성
         if (runner.IsServer)
         {
             Debug.Log($"Character Spawn for Player: {player.PlayerId}");
-            // 플레이어가 생성될 위치 지정 (호스트가 일괄 제어)
+            // 호스트가 일괄 제어
             NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.one * 2f, Quaternion.identity, player);
 
             // 플레이어 오브젝트 소유권 설정
@@ -228,11 +227,26 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         }
         Debug.Log("OnPlayerJoined 완료");
     }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
+    {
+        if (runner.IsServer)
+        {
+            // 네트워크 객체를 탐색
+            if (runner.TryGetPlayerObject(player, out NetworkObject playerObject))
+            {
+                if (playerObject != null)
+                {
+                    runner.Despawn(playerObject);
+                }
+            }
+            runner.SetPlayerObject(player, null);
+        }
+    }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
         NetworkInputData inputData = new NetworkInputData();
 
-        // 새로운 인풋 시스템 test 입력 감지
+        // test 입력 감지
         float horizontal = 0f;
         float vertical = 0f;
 
@@ -245,7 +259,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         inputData.movementInput = new Vector3(horizontal, 0, vertical);
 
-        // 포장한 데이터를 Fusion 엔진으로 전송
+        // 포장한 데이터를 Fusion 전송
         input.Set(inputData);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
@@ -295,11 +309,6 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
     }
 
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
-    {
-
-    }
-
     public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress)
     {
 
@@ -326,10 +335,3 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     }
 
 }
-
-
-
-
-
-
-

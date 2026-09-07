@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.InputSystem;
 using Fusion;
+
 
 public class TestPlayerMove : NetworkBehaviour
 {
@@ -8,16 +8,12 @@ public class TestPlayerMove : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (HasInputAuthority)
+        if (GetInput(out NetworkInputData data))
         {
-            if (Keyboard.current.wKey.isPressed)
-            {
-                transform.Translate(Vector3.forward * moveSpeed * Runner.DeltaTime, Space.World);
-            }
-            if (Keyboard.current.sKey.isPressed)
-            {
-                transform.Translate(Vector3.back * moveSpeed * Runner.DeltaTime, Space.World);
-            }
+            Vector3 moveDirection = data.movementInput.normalized;
+
+            // NetworkTransform이 위치를 부드럽게 보간
+            transform.position += moveDirection * moveSpeed * Runner.DeltaTime;
         }
     }
 }

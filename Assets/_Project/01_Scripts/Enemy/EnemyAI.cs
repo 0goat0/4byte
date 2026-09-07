@@ -32,11 +32,15 @@ public class EnemyAI : NetworkBehaviour
     [SerializeField] private EnemyData data;
 
     [Header("Detection")]
-    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackRange = 4f;
     public float AttackRange { get { return attackRange; }}
-    [SerializeField] private float detectRange = 4f;
+    [SerializeField] private float detectRange = 5f;
     public float DetectRange { get { return detectRange; }}
     [SerializeField] private LayerMask targetLayerMask;
+    public float AttackInterval { get { return attackInterval; } }
+    [SerializeField] private float attackInterval = 1.5f;
+   
+
     public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
 
 
@@ -48,18 +52,21 @@ public class EnemyAI : NetworkBehaviour
     //어떤 타겟을 따라가는지 체크
     [Networked] public NetworkObject Target { get; set; }
     //공격 쿨타임 체크
-    [Networked] TickTimer AttackCooldown { get; set; }
+    [Networked] public TickTimer AttackCooldown { get; set; }
 
     [Networked] public TickTimer DetectTimer { get; set; }
 
-    public NavMeshAgent agent;
+    //public NavMeshAgent agent;
+    public NetworkNavMeshMover Mover { get; set; }
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
+        //agent = GetComponent<NavMeshAgent>();
+        Mover = GetComponent<NetworkNavMeshMover>();
+        
     }
 
     public override void Spawned()
@@ -82,10 +89,10 @@ public class EnemyAI : NetworkBehaviour
             CurrentHp = data.hp;
             StateType = EnemyStateType.Idle;
         }
-        else
-        {
-            agent.enabled = false;
-        }
+        //else
+        //{
+        //    agent.enabled = false;
+        //}
         currentState = stateDic[StateType];
         //테스트
         //StartCoroutine(DespawnEnemy());

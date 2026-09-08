@@ -56,6 +56,10 @@ public class EnemyAI : NetworkBehaviour
 
     [Networked] public TickTimer DetectTimer { get; set; }
 
+    //죽은 뒤 실제로 Despawn 되기까지 기다리는 타이머 (사망 연출 시간 확보용)
+    [Networked] public TickTimer DeathTimer { get; set; }
+    public float DespawnDelay = 2f;
+
     //public NavMeshAgent agent;
     public NetworkNavMeshMover Mover { get; set; }
 
@@ -143,16 +147,25 @@ public class EnemyAI : NetworkBehaviour
         currentState.Enter(this);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void TakeDamage(float damage)
     {
-        
-    }
+        //접근 권한은 호스트에게
+        if (!HasStateAuthority)
+        {
+            return;
+        }
+        //이미 죽은 상태일 때 무시
+        if(StateType == EnemyStateType.Dead)
+        {
+            return;
+        }
+        CurrentHp -= damage;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if(CurrentHp <= 0f)
+        {
+            CurrentHp = 0f;
+            ChangeState(EnemyStateType.Dead);
+        }
     }
 
 

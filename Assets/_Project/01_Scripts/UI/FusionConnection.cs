@@ -71,10 +71,56 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         }
         else
         {
-            Debug.LogError($"false in Lobby: {result.ShutdownReason}");
+            Debug.Log("방만들기 실패");
             isConnecting = false;
         }
 
+    }
+    // 방 개설 호스트
+    public async void CreateSession()
+    {
+        if (!isInLobby)
+        {
+            Debug.LogWarning("아직 로비가 아닙니다");
+            return;
+        }
+
+        if (isConnecting) return;
+        isConnecting = true;
+        roomListCanvas.SetActive(false);
+
+        int randomInt = UnityEngine.Random.Range(1000, 9999);
+        string randomSessionName = "Room-" + randomInt.ToString();
+
+        if (runner == null)
+        {
+            runner = gameObject.AddComponent<NetworkRunner>();
+        }
+        runner.RemoveCallbacks(this);
+        runner.AddCallbacks(this);
+
+        var sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
+        if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+
+        var result = await runner.StartGame(new StartGameArgs
+        {
+            GameMode = GameMode.Host,
+            SessionName = randomSessionName,
+            Scene = SceneRef.FromIndex(5),
+            PlayerCount = 3,
+            SceneManager = sceneManager,
+        });
+
+        if (!result.Ok)
+        {
+            Debug.LogError($"Creation Room false(Host): {result.ShutdownReason}");
+            roomListCanvas.SetActive(true);
+            isConnecting = false;
+        }
+        else
+        {
+            isInLobby = false;
+        }
     }
 
     // 리스트에서 방 선택 Client 접속
@@ -104,7 +150,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         if (!result.Ok)
         {
-            Debug.LogError($"Connect Room false(Client): {result.ShutdownReason}");
+            Debug.Log("방들어가기 실패");
             roomListCanvas.SetActive(true);
             isConnecting = false;
         }
@@ -114,55 +160,6 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
             isInLobby = false;
         }
     }
-
-    // 방을 개설하고 호스트 역할을 맡는 메서드
-    public async void CreateSession()
-    {
-        // 로비가 아니면 방 생성 차단
-        if (!isInLobby)
-        {
-            Debug.LogWarning("아직 로비가 아닙니다");
-            return;
-        }
-
-        if (isConnecting) return;
-        isConnecting = true;
-        roomListCanvas.SetActive(false);
-
-        int randomInt = UnityEngine.Random.Range(1000, 9999);
-        string randomSessionName = "Room-" + randomInt.ToString();
-
-        if (runner == null)
-        {
-            runner = gameObject.AddComponent<NetworkRunner>();
-        }
-        runner.RemoveCallbacks(this);
-        runner.AddCallbacks(this);
-
-        var sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
-        if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
-
-        var result = await runner.StartGame(new StartGameArgs
-        {
-            GameMode = GameMode.Host,
-            SessionName = randomSessionName,
-            Scene = SceneRef.FromIndex(9),
-            PlayerCount = 3,
-            SceneManager = sceneManager,
-        });
-
-        if (!result.Ok)
-        {
-            Debug.LogError($"Creation Room false(Host): {result.ShutdownReason}");
-            roomListCanvas.SetActive(true);
-            isConnecting = false;
-        }
-        else
-        {
-            isInLobby = false;
-        }
-    }
-
     public void OnConnectedToServer(NetworkRunner runner)
     {
         Debug.Log("OnConnectedToServer");
@@ -219,6 +216,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer)
         {
             Debug.Log($"Character Spawn for Player: {player.PlayerId}");
+
             // 호스트가 일괄 제어
             NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.one * 2f, Quaternion.identity, player);
 
@@ -259,7 +257,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         inputData.movementInput = new Vector3(horizontal, 0, vertical);
 
-        // 포장한 데이터를 Fusion 전송
+        // Fusion으로
         input.Set(inputData);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)

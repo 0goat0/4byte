@@ -54,7 +54,10 @@ public class GameCursorController : MonoBehaviour
         // ESC 등으로 커서 제한이 해제된 상태에서 화면을 다시 클릭하면
         // 커서를 게임 창 내부로 다시 제한
         if (Cursor.lockState == CursorLockMode.None)
+        {
             ConfineCursor();
+            return;
+        }
     }
 
     private void ConfineCursor()

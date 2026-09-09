@@ -47,7 +47,7 @@ MonoBehaviour:
     name: ground-cracked
   - gameObject: {fileID: 6806209160405115877, guid: 380969bebc333424ea8a5e0c4e90ecfe, type: 3}
     settings:
-      m_Strength: 50
+      m_Strength: 77.03782
       m_RotationRangeMin: {x: 0, y: 0, z: 0}
       m_RotationRangeMax: {x: 0, y: 0, z: 0}
       m_ScaleRangeMin: {x: 1, y: 1, z: 1}
@@ -127,7 +127,7 @@ MonoBehaviour:
     name: stalags
   - gameObject: {fileID: 8944923598407464484, guid: f0689336febc0ae4590c4719b4791ece, type: 3}
     settings:
-      m_Strength: 50
+      m_Strength: 85.35714
       m_RotationRangeMin: {x: 0, y: 0, z: 0}
       m_RotationRangeMax: {x: 0, y: 0, z: 0}
       m_ScaleRangeMin: {x: 1, y: 1, z: 1}
@@ -143,7 +143,7 @@ MonoBehaviour:
     name: stone-diamond
   - gameObject: {fileID: 5058428829962905096, guid: bdf368665f168714cb3a88128a9d17c1, type: 3}
     settings:
-      m_Strength: 50
+      m_Strength: 100
       m_RotationRangeMin: {x: 0, y: 0, z: 0}
       m_RotationRangeMax: {x: 0, y: 0, z: 0}
       m_ScaleRangeMin: {x: 1, y: 1, z: 1}

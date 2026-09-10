@@ -55,12 +55,12 @@ public class EnemySpawner : NetworkBehaviour
     {
         int spawned = 0;
 
-        while(spawned < 100)
+        while(spawned < 1)
         {
             TrySpawnEnemyAroundBuilding();
             spawned++;
 
-            yield return new WaitForSeconds(1f);
+            yield return null;
         }
 
         //초기 소환 완료

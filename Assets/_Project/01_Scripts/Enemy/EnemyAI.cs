@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Fusion;
 using System.Collections;
+using UnityEngine.AI;
 
 public interface IEnemyState
 {
@@ -20,8 +21,6 @@ public enum EnemyStateType
     Attack,
     Dead
 }
-
-
 public class EnemyAI : NetworkBehaviour
 {
 
@@ -34,7 +33,15 @@ public class EnemyAI : NetworkBehaviour
 
     [Header("Detection")]
     [SerializeField] private float attackRange;
+    public float AttackRange { get { return attackRange; }}
     [SerializeField] private float detectRange;
+    public float DetectRange { get { return detectRange; }}
+    [SerializeField] private LayerMask targetLayerMask;
+    public float AttackInterval { get { return attackInterval; } }
+    [SerializeField] private float attackInterval;
+   
+
+    public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
 
 
     //현재 상태 체크
@@ -43,13 +50,29 @@ public class EnemyAI : NetworkBehaviour
     //현재 체력 체크
     [Networked] public float CurrentHp { get; set; }
     //어떤 타겟을 따라가는지 체크
-    [Networked] NetworkObject Target { get; set; }
+    [Networked] public NetworkObject Target { get; set; }
     //공격 쿨타임 체크
-    [Networked] TickTimer AttackCooldown { get; set; }
+    [Networked] public TickTimer AttackCooldown { get; set; }
 
+    [Networked] public TickTimer DetectTimer { get; set; }
+
+    //죽은 뒤 실제로 Despawn 되기까지 기다리는 타이머 (사망 연출 시간 확보용)
+    [Networked] public TickTimer DeathTimer { get; set; }
+    public float DespawnDelay = 2f;
+
+    //public NavMeshAgent agent;
+    public EnemyAnimeController Animator { get; set; }
+    public NetworkNavMeshMover Mover { get; set; }
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
+
+    private void Awake()
+    {
+        //agent = GetComponent<NavMeshAgent>();
+        Mover = GetComponent<NetworkNavMeshMover>();
+        Animator = GetComponentInChildren<EnemyAnimeController>();
+    }
 
     public override void Spawned()
     {
@@ -70,10 +93,15 @@ public class EnemyAI : NetworkBehaviour
         {
             CurrentHp = data.hp;
             StateType = EnemyStateType.Idle;
+            Animator.PlaySpawn();
         }
+        //else
+        //{
+        //    agent.enabled = false;
+        //}
         currentState = stateDic[StateType];
         //테스트
-        StartCoroutine(DespawnEnemy());
+        //StartCoroutine(DespawnEnemy());
         currentState.Enter(this);
     }
     //테스트 코드
@@ -112,19 +140,43 @@ public class EnemyAI : NetworkBehaviour
     //각 상태의 Enter가 실행되는 구조.
     private void OnStateTypeChanged()
     {
+        //이미 호스트는 change에서 변경을 했으므로 생략
+        if (HasStateAuthority)
+        {
+            return;
+        }
         currentState = stateDic[StateType];
         currentState.Enter(this);
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void TakeDamage(float damage)
     {
-        
+        //접근 권한은 호스트에게
+        if (!HasStateAuthority)
+        {
+            return;
+        }
+        //이미 죽은 상태일 때 무시
+        if(StateType == EnemyStateType.Dead)
+        {
+            return;
+        }
+        CurrentHp -= damage;
+
+        if(CurrentHp <= 0f)
+        {
+            CurrentHp = 0f;
+            ChangeState(EnemyStateType.Dead);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    private void OnDrawGizmosSelected()
     {
-        
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
     }
 }

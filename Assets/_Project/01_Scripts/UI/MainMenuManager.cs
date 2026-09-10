@@ -8,32 +8,48 @@ using System.Collections;
 
 public class MainMenuManager : MonoBehaviour
 {
-    public static MainMenuManager Instance;
+    public static MainMenuManager instance;
     private Animator animator;
 
     private void Awake()
     {
+        if (instance == null) instance = this;
+
         animator = GetComponent<Animator>();
     }
-
-
-
-    public void MainMenu() => SceneManager.LoadScene("StartScenes");
     public void SinglePlay() => SceneManager.LoadScene("SingleGame");
-    public void MultiPlay() => SceneManager.LoadScene("Lobby");
+    public void MultiPlay() => SceneManager.LoadScene("MultiGame");
     public void TutorialPlay() => SceneManager.LoadScene("TutorialScene");
 
     public void Close()
     {
-        StartCoroutine(CloseAfterDelay());
+        StartCoroutine(CloseAfterDelay(this.gameObject, this.animator));
     }
 
-    private IEnumerator CloseAfterDelay()
+    public void CloseTargetUI(GameObject targetUI, Animator targetAnimator)
     {
-        animator.SetTrigger("Close");
+        StartCoroutine(CloseAfterDelay(targetUI, targetAnimator));
+    }
+
+    // 매개변수 받음
+    private IEnumerator CloseAfterDelay(GameObject targetUI, Animator targetAnimator)
+    {
+        if (targetAnimator != null)
+        {
+            targetAnimator.SetTrigger("Close");
+        }
+
         yield return new WaitForSeconds(0.5f);
-        gameObject.SetActive(false);
-        animator.ResetTrigger("Close");
+
+        if (targetAnimator != null)
+        {
+            targetAnimator.ResetTrigger("Close");
+        }
+
+        if (targetUI != null)
+        {
+            targetUI.SetActive(false);
+        }
     }
 
     public void Exit()
@@ -44,6 +60,4 @@ public class MainMenuManager : MonoBehaviour
 #endif
         Application.Quit();
     }
-
-
 }

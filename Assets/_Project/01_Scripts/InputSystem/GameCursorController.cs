@@ -3,6 +3,8 @@
 public class GameCursorController : MonoBehaviour
 {
     [SerializeField] private RTSInputReader inputReader;
+    [SerializeField] private PlayerInteractionState _playerState;
+    [SerializeField] private Texture2D _attackCursor;
 
     private void Awake()
     {
@@ -16,6 +18,9 @@ public class GameCursorController : MonoBehaviour
         // 화면을 클릭하면 커서를 다시 게임 창 내부에 제한
         inputReader.SelectStarted += HandleScreenClicked;
 
+        if (_playerState != null)
+            _playerState.OnSelectionChanged += RefreshCursor;
+
         // 오브젝트가 활성화될 때 기본적으로 커서를 게임 창 내부에 제한
         ConfineCursor();
     }
@@ -25,6 +30,9 @@ public class GameCursorController : MonoBehaviour
         // 오브젝트가 비활성화될 때 등록했던 이벤트 해제
         inputReader.OnEscapePressed -= ReleaseCursor;
         inputReader.SelectStarted -= HandleScreenClicked;
+
+        if (_playerState != null)
+            _playerState.OnSelectionChanged -= RefreshCursor;
 
         // 게임 시스템이 비활성화되면 커서 제한도 해제
         ReleaseCursor();
@@ -54,7 +62,10 @@ public class GameCursorController : MonoBehaviour
         // ESC 등으로 커서 제한이 해제된 상태에서 화면을 다시 클릭하면
         // 커서를 게임 창 내부로 다시 제한
         if (Cursor.lockState == CursorLockMode.None)
+        {
             ConfineCursor();
+            return;
+        }
     }
 
     private void ConfineCursor()
@@ -62,6 +73,7 @@ public class GameCursorController : MonoBehaviour
         // 커서를 게임 창 내부에서만 움직일 수 있도록 제한
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = true;
+        RefreshCursor();
     }
 
     public void ReleaseCursor()
@@ -69,5 +81,29 @@ public class GameCursorController : MonoBehaviour
         // 커서 제한을 해제하여 게임 창 밖으로 이동할 수 있도록 함
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+        RefreshCursor();
+    }
+
+    private void RefreshCursor()
+    {
+        bool shouldShowAttackCursor =
+            isActiveAndEnabled &&
+            Application.isFocused &&
+            Cursor.lockState == CursorLockMode.Confined &&
+            _playerState != null &&
+            _playerState.Mode == PlayerInteractionMode.AttackTargeting;
+
+        if (shouldShowAttackCursor && _attackCursor != null)
+        {
+            // 조준점 중앙이 실제 클릭 위치와 일치하도록 설정합니다.
+            Vector2 hotspot = new Vector2(
+                _attackCursor.width * 0.5f,
+                _attackCursor.height * 0.5f);
+
+            Cursor.SetCursor(_attackCursor, hotspot, CursorMode.Auto);
+            return;
+        }
+
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
 }

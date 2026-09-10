@@ -32,13 +32,13 @@ public class EnemyAI : NetworkBehaviour
     [SerializeField] private EnemyData data;
 
     [Header("Detection")]
-    [SerializeField] private float attackRange = 4f;
+    [SerializeField] private float attackRange;
     public float AttackRange { get { return attackRange; }}
-    [SerializeField] private float detectRange = 5f;
+    [SerializeField] private float detectRange;
     public float DetectRange { get { return detectRange; }}
     [SerializeField] private LayerMask targetLayerMask;
     public float AttackInterval { get { return attackInterval; } }
-    [SerializeField] private float attackInterval = 1.5f;
+    [SerializeField] private float attackInterval;
    
 
     public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
@@ -61,6 +61,7 @@ public class EnemyAI : NetworkBehaviour
     public float DespawnDelay = 2f;
 
     //public NavMeshAgent agent;
+    public EnemyAnimeController Animator { get; set; }
     public NetworkNavMeshMover Mover { get; set; }
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
@@ -70,7 +71,7 @@ public class EnemyAI : NetworkBehaviour
     {
         //agent = GetComponent<NavMeshAgent>();
         Mover = GetComponent<NetworkNavMeshMover>();
-        
+        Animator = GetComponentInChildren<EnemyAnimeController>();
     }
 
     public override void Spawned()
@@ -92,6 +93,7 @@ public class EnemyAI : NetworkBehaviour
         {
             CurrentHp = data.hp;
             StateType = EnemyStateType.Idle;
+            Animator.PlaySpawn();
         }
         //else
         //{

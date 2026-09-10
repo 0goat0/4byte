@@ -13,6 +13,7 @@ public class EnemyAttackState : IEnemyState
         enemy.Mover.Stop();
         Debug.Log("공격시작");
         enemy.AttackCooldown = TickTimer.None;
+        enemy.Animator.SetState(EnemyStateType.Attack);
     }
 
     public void Exit(EnemyAI enemy)

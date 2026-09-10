@@ -55,7 +55,7 @@ public class EnemySpawner : NetworkBehaviour
     {
         int spawned = 0;
 
-        while(spawned < 100)
+        while(spawned < 1)
         {
             TrySpawnEnemyAroundBuilding();
             spawned++;

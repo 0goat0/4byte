@@ -38,6 +38,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/00_Scenes/Develop/Buildings.unity
     guid: e2c15fadb47eba24798f054b1eacb604
+  - enabled: 1
+    path: Assets/_Project/00_Scenes/Develop/GameScene/IntroScene.unity
+    guid: 1962ef40367cbe24c8b93ab2b23c27cf
+  - enabled: 1
+    path: Assets/_Project/00_Scenes/Develop/GameScene/AppScene.unity
+    guid: ea4a50660e1f0424fb55a431a2d97b42
+  - enabled: 1
+    path: Assets/_Project/00_Scenes/Develop/GameScene/SingleGame.unity
+    guid: ad0db6e7d4008d94bbb5ce76b5ad8b8e
+  - enabled: 1
+    path: Assets/_Project/00_Scenes/Develop/GameScene/TutorialScene_ArtSource.unity
+    guid: 53e4491f855e86d42bd2463edb19fb74
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

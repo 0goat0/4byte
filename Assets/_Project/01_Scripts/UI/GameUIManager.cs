@@ -1,25 +1,20 @@
 ﻿using Fusion;
+using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using System.Collections;
 
-
-public class MainMenuManager : MonoBehaviour
+public class GameUIManager : MonoBehaviour
 {
-    public static MainMenuManager instance;
+    public static GameUIManager instance;
     private Animator animator;
 
     private void Awake()
     {
         if (instance == null) instance = this;
-
         animator = GetComponent<Animator>();
     }
-    public void SinglePlay() => SceneManager.LoadScene("SingleGame");
-    public void MultiPlay() => SceneManager.LoadScene("MultiGame");
-    public void TutorialPlay() => SceneManager.LoadScene("TutorialScene");
 
     public void Close()
     {
@@ -50,14 +45,5 @@ public class MainMenuManager : MonoBehaviour
         {
             targetUI.SetActive(false);
         }
-    }
-
-    public void Exit()
-    {
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-
-#endif
-        Application.Quit();
     }
 }

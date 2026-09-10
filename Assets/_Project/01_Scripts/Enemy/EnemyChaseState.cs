@@ -5,6 +5,7 @@ public class EnemyChaseState : IEnemyState
     public void Enter(EnemyAI enemy)
     {
         //Debug.Log("추적시작");
+        enemy.Animator.SetState(EnemyStateType.Chase);
     }
 
     public void Exit(EnemyAI enemy)

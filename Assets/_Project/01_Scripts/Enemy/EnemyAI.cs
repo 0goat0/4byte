@@ -21,7 +21,7 @@ public enum EnemyStateType
     Attack,
     Dead
 }
-public class EnemyAI : NetworkBehaviour
+public class EnemyAI : NetworkBehaviour, IDamageable
 {
 
     [Header("Data")]
@@ -30,7 +30,7 @@ public class EnemyAI : NetworkBehaviour
     //드랍골드
     //몬스터 프리펩
     [SerializeField] private EnemyData data;
-
+    public EnemyData Data { get { return data; } }
     [Header("Detection")]
     [SerializeField] private float attackRange;
     public float AttackRange { get { return attackRange; }}
@@ -64,6 +64,8 @@ public class EnemyAI : NetworkBehaviour
     public EnemyAnimeController Animator { get; set; }
     public NetworkNavMeshMover Mover { get; set; }
 
+    public bool IsAlive => StateType != EnemyStateType.Dead;
+
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
 
@@ -93,12 +95,17 @@ public class EnemyAI : NetworkBehaviour
         {
             CurrentHp = data.hp;
             StateType = EnemyStateType.Idle;
+            Target = null;
+            AttackCooldown = TickTimer.None;
+            DetectTimer = TickTimer.None;
+            DeathTimer = TickTimer.None;
             Animator.PlaySpawn();
         }
         //else
         //{
         //    agent.enabled = false;
         //}
+        ResetLocalVisualState();
         currentState = stateDic[StateType];
         //테스트
         //StartCoroutine(DespawnEnemy());
@@ -149,7 +156,7 @@ public class EnemyAI : NetworkBehaviour
         currentState.Enter(this);
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, NetworkObject attacker)
     {
         //접근 권한은 호스트에게
         if (!HasStateAuthority)
@@ -170,7 +177,12 @@ public class EnemyAI : NetworkBehaviour
         }
     }
 
-
+    private void ResetLocalVisualState()
+    {
+        Animator.SetState(EnemyStateType.Idle); 
+        // IsChase/IsAttack 둘 다 false로
+        // 콜라이더를 죽을 때 껐다면 여기서 다시 켜주는 처리 등을 추가
+    }
 
     private void OnDrawGizmosSelected()
     {

@@ -43,6 +43,11 @@ public class EnemyAttackState : IEnemyState
         {
             Debug.Log("공격중");
             enemy.AttackCooldown = TickTimer.CreateFromSeconds(enemy.Runner, enemy.AttackInterval);
+            IDamageable damageable = enemy.Target.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(enemy.Data.attack, enemy.Object);
+            }
         }
     }
 }

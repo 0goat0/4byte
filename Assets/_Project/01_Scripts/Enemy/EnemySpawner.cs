@@ -63,10 +63,12 @@ public class EnemySpawner : NetworkBehaviour
         {
             return;
         }
-        //if(enemyNum < spawnedEnemies.Count)
-        //{
-        //    return;
-        //}
+        //e = enemy
+        spawnedEnemies.RemoveAll(e => e == null || !e.IsValid);
+        if (enemyNum < spawnedEnemies.Count)
+        {
+            return;
+        }
         if (RemainingInBurst > 0)
         {
             if (!BurstTimer.ExpiredOrNotRunning(Runner)) return;

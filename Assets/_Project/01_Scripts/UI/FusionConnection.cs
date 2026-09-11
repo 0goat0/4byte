@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using System.Threading.Tasks;
 
 public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 {
     public static FusionConnection instance;
     public bool connectOnAwake = false;
+    [SerializeField] private NetworkRunner _runnerPrefab;
     public NetworkRunner runner;
     [SerializeField] NetworkObject playerPrefab;
     public string _playerName = null;
@@ -18,18 +20,29 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     private bool isInLobby = false;
 
     [Header("Session List")]
-    public GameObject roomListCanvas;
+    public GameObject roomListPanel;
     private List<SessionInfo> _sessions = new List<SessionInfo>();
     public Button refreshButton;
     public Transform sessionListContent;
     public GameObject sessionEntryPrefab;
 
+    [Header("Scene")]
+    [SerializeField] private int _multiGameSceneNumber;
+
+    private PooledNetworkObjectProvider _pooledProvider;
+
     private void Awake()
     {
-        if (instance == null)
+        if (instance != null && instance != this)
         {
-            instance = this;
+            Destroy(gameObject);
+            return;
         }
+
+        instance = this;
+
+        DontDestroyOnLoad(gameObject);
+
         if (connectOnAwake == true)
         {
             CreateSession();
@@ -47,16 +60,10 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         if (isConnecting) return;
         isConnecting = true;
 
-        roomListCanvas.SetActive(true);
+        roomListPanel.SetActive(true);
         _playerName = playerName;
 
-        if (runner == null)
-        {
-            runner = gameObject.AddComponent<NetworkRunner>();
-        }
-
-        runner.RemoveCallbacks(this);
-        runner.AddCallbacks(this);
+        CreateRunner();
 
         Debug.Log("Loading in Lobby");
 
@@ -67,11 +74,15 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("Connrecting Lobby");
             isInLobby = true;
             isConnecting = false;
-            roomListCanvas.SetActive(true); // 로비 진입이 완벽히 끝나면 UI
+            roomListPanel.SetActive(true); // 로비 진입이 완벽히 끝나면 UI
         }
         else
         {
             Debug.Log("방만들기 실패");
+            isConnecting = true;
+
+            await ReleaseRunnerAsync();
+
             isConnecting = false;
         }
 
@@ -87,39 +98,43 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         if (isConnecting) return;
         isConnecting = true;
-        roomListCanvas.SetActive(false);
+        roomListPanel.SetActive(false);
 
         int randomInt = UnityEngine.Random.Range(1000, 9999);
         string randomSessionName = "Room-" + randomInt.ToString();
 
-        if (runner == null)
-        {
-            runner = gameObject.AddComponent<NetworkRunner>();
-        }
-        runner.RemoveCallbacks(this);
-        runner.AddCallbacks(this);
+        CreateRunner();
 
         var sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
-        if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+        // if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
 
         var result = await runner.StartGame(new StartGameArgs
         {
             GameMode = GameMode.Host,
             SessionName = randomSessionName,
-            Scene = SceneRef.FromIndex(5),
+            Scene = SceneRef.FromIndex(_multiGameSceneNumber),
             PlayerCount = 3,
             SceneManager = sceneManager,
+            ObjectProvider = _pooledProvider
         });
 
         if (!result.Ok)
         {
             Debug.LogError($"Creation Room false(Host): {result.ShutdownReason}");
-            roomListCanvas.SetActive(true);
+
+            isInLobby = false;
+            isConnecting = true;
+
+            await ReleaseRunnerAsync();
+
             isConnecting = false;
+            ConnectedToLobby(_playerName);
+            return;
         }
         else
         {
             isInLobby = false;
+            isConnecting = false;
         }
     }
 
@@ -135,10 +150,10 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         if (isConnecting) return;
         isConnecting = true;
-        roomListCanvas.SetActive(false);
+        roomListPanel.SetActive(false);
 
         var sceneManager = runner.GetComponent<NetworkSceneManagerDefault>();
-        if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
+        // if (sceneManager == null) sceneManager = runner.gameObject.AddComponent<NetworkSceneManagerDefault>();
 
 
         var result = await runner.StartGame(new StartGameArgs
@@ -146,24 +161,73 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
             GameMode = GameMode.Client,
             SessionName = sessionName,
             SceneManager = sceneManager,
+            ObjectProvider = _pooledProvider
         });
 
         if (!result.Ok)
         {
             Debug.Log("방들어가기 실패");
-            roomListCanvas.SetActive(true);
+
+            isConnecting = true;
+
+            await ReleaseRunnerAsync();
+
             isConnecting = false;
+            ConnectedToLobby(_playerName);
+            return;
         }
         else
         {
             // 로비 상태 해제
             isInLobby = false;
+            isConnecting = false;
         }
     }
+
+    private void CreateRunner()
+    {
+        if (runner != null)
+            return;
+
+        runner = Instantiate(_runnerPrefab);
+
+        DontDestroyOnLoad(runner.gameObject);
+
+        _pooledProvider = runner.gameObject.AddComponent<PooledNetworkObjectProvider>();
+        _pooledProvider.SetMaxPoolCount(30);
+
+        runner.ProvideInput = true;
+        runner.AddCallbacks(this);
+    }
+
+    private async Task ReleaseRunnerAsync()
+    {
+        NetworkRunner previousRunner = runner;
+        runner = null;
+        _pooledProvider = null;
+        isInLobby = false;
+
+        if (previousRunner == null)
+            return;
+
+        previousRunner.RemoveCallbacks(this);
+
+        try
+        {
+            await previousRunner.Shutdown();
+        }
+        finally
+        {
+            if (previousRunner != null)
+            {
+                Destroy(previousRunner.gameObject);
+            }
+        }
+    }
+
     public void OnConnectedToServer(NetworkRunner runner)
     {
         Debug.Log("OnConnectedToServer");
-        isConnecting = false;
     }
 
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList)
@@ -212,17 +276,18 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     // 호스트 Spawn 권한
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        // 호스트 오브젝트 생성
-        if (runner.IsServer)
-        {
-            Debug.Log($"Character Spawn for Player: {player.PlayerId}");
+        // 호스트만 플레이어 스폰
+        if (!runner.IsServer)
+            return;
 
-            // 호스트가 일괄 제어
-            NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.one * 2f, Quaternion.identity, player);
+        Debug.Log($"Character Spawn for Player: {player.PlayerId}");
 
-            // 플레이어 오브젝트 소유권 설정
-            runner.SetPlayerObject(player, playerObject);
-        }
+        // playerObject 를 스폰한 후 접속한 player 에게 입력권한 부여
+        NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.one * 2f, Quaternion.identity, player);
+
+        // 생성한 오브젝트를 플레이어 대표 캐릭터로 설정
+        runner.SetPlayerObject(player, playerObject);
+        
         Debug.Log("OnPlayerJoined 완료");
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -242,6 +307,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        /*
         NetworkInputData inputData = new NetworkInputData();
 
         // test 입력 감지
@@ -259,10 +325,10 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
 
         // Fusion으로
         input.Set(inputData);
+        */
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
-        isConnecting = false;
         isInLobby = false;
     }
 

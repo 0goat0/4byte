@@ -1,14 +1,10 @@
-﻿using System;
+﻿using Fusion;
+using System;
 using UnityEngine;
 
 [Serializable]
-public class UnitData
-{
-    [SerializeField] private string _name;
-    public string Name => _name;
+public struct UnitData : INetworkStruct
+{    
+    public NetworkString<_32> Name;
 
-    public UnitData(string name)
-    {
-        _name = name;
-    }
 }

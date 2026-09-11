@@ -21,7 +21,7 @@ public class SelectionInfoPresenter : MonoBehaviour
     {
         if (_state.InfoTarget is Unit unit)
         {
-            _unitView.UpdateUnitInfoUI(unit.UnitData.Name);
+            _unitView.UpdateUnitInfoUI(unit.UnitData.Name.ToString());
             return;
         }
 

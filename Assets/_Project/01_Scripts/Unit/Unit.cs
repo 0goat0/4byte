@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using static UnityEngine.LowLevelPhysics2D.PhysicsLayers;
 
 public class Unit : NetworkBehaviour, ISelectable
 {
-    [SerializeField] private UnitData _unitData;
-    public UnitData UnitData => _unitData;
-
-    [Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
-    public NetworkString<_32> playerName { get; set; }
+    [Networked, OnChangedRender(nameof(OnUnitDataChanged))]
+    public UnitData UnitData { get; set; }
 
     [SerializeField] private TextMeshProUGUI playerNameLabel;
 
@@ -28,17 +26,15 @@ public class Unit : NetworkBehaviour, ISelectable
             if (FusionConnection.instance != null && !string.IsNullOrEmpty(FusionConnection.instance._playerName))
             {
                 string localName = FusionConnection.instance._playerName;
-                UpdateNameUI(localName);
-                RPC_SetPlayerName(localName);
 
-                _unitData = null;
-                _unitData = new UnitData(localName);
+                RPC_SetPlayerName(localName);
             }
         }
         else
         {
-            UpdateNameUI(string.IsNullOrEmpty(playerName.Value) ? "Connecting..." : playerName.Value);
+            UpdateNameUI(string.IsNullOrEmpty(UnitData.Name.Value) ? "Connecting..." : UnitData.Name.Value);
         }
+
     }
 
     public void RequestMove(Vector3 destination)
@@ -87,14 +83,16 @@ public class Unit : NetworkBehaviour, ISelectable
     // -----------------------
 
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_SetPlayerName(string nameInput, RpcInfo info = default)
+    private void RPC_SetPlayerName(string nameInput)
     {
-        playerName = nameInput;
+        UnitData data = UnitData;
+        data.Name = nameInput;
+        UnitData = data;
     }
 
-    private void OnPlayerNameChanged()
+    private void OnUnitDataChanged()
     {
-        UpdateNameUI(playerName.Value);
+        UpdateNameUI(UnitData.Name.ToString());
     }
 
     private void UpdateNameUI(string nameToDisplay)

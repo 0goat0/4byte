@@ -1208,12 +1208,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractionController
   inputReader: {fileID: 1009794230}
   playerState: {fileID: 1143854700}
-  groundMask:
+  _groundMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 8
   _enemyMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
 --- !u!4 &1143854702
 Transform:
   m_ObjectHideFlags: 0
@@ -1963,7 +1963,7 @@ GameObject:
   - component: {fileID: 1903273838}
   - component: {fileID: 1903273837}
   - component: {fileID: 1903273836}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}

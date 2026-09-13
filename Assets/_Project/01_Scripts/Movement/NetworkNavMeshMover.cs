@@ -15,12 +15,18 @@ public class NetworkNavMeshMover : NetworkBehaviour
     private NavMeshAgent _agent;
     private bool _hasActiveDestination;
 
+    private Transform _transform;
+    private NetworkTransform _networkTransform;
+
     // NavMesh 에는 도착 이벤트가 없으므로 직접 판정하여 외부에 전달
     public event Action OnDestinationReached;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _transform = GetComponent<Transform>();
+        _networkTransform = GetComponent<NetworkTransform>();
+
     }
 
     public override void Spawned()
@@ -63,8 +69,13 @@ public class NetworkNavMeshMover : NetworkBehaviour
 
         _destination = destination;
 
+        _agent.ResetPath();
+        _agent.velocity = Vector3.zero;
         // 목적지 설정 요청이 받아들여진 경우에만 도착 판정을 시작
         _hasActiveDestination = _agent.SetDestination(_destination);
+
+        _transform.LookAt(destination);
+        _networkTransform.Teleport(rotation: _transform.rotation);
     }
 
     public void Stop()

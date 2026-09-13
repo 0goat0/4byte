@@ -6760,13 +6760,13 @@ MonoBehaviour:
   connectOnAwake: 0
   _runnerPrefab: {fileID: 1580327832357904236, guid: 74303b609d8823843916e22f373e4722, type: 3}
   runner: {fileID: 0}
-  playerPrefab: {fileID: 8399571899790391692, guid: 29c56152f00e0a147a371efa5e1f683c, type: 3}
+  playerPrefab: {fileID: 1160613095927867265, guid: 77f87eac40d36614a9f1fe44490c529e, type: 3}
   _playerName: 
   roomListPanel: {fileID: 2087799551}
   refreshButton: {fileID: 606730954}
   sessionListContent: {fileID: 14984216}
   sessionEntryPrefab: {fileID: 5886126544480571764, guid: 16459160eaabb39439c1bb3fbe875fa0, type: 3}
-  _multiGameSceneNumber: 5
+  _multiGameSceneNumber: 15
 --- !u!4 &2076812556
 Transform:
   m_ObjectHideFlags: 0

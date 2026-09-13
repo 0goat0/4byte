@@ -283,7 +283,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"Character Spawn for Player: {player.PlayerId}");
 
         // playerObject 를 스폰한 후 접속한 player 에게 입력권한 부여
-        NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.one * 2f, Quaternion.identity, player);
+        NetworkObject playerObject = runner.Spawn(playerPrefab, new Vector3(8, 0, -8), Quaternion.identity, player);
 
         // 생성한 오브젝트를 플레이어 대표 캐릭터로 설정
         runner.SetPlayerObject(player, playerObject);

@@ -14,12 +14,13 @@ GameObject:
   - component: {fileID: 7670562249218709005}
   - component: {fileID: 1522358820394167559}
   - component: {fileID: 4135977548735882359}
-  - component: {fileID: 798535176698747854}
   - component: {fileID: -2318048824349883060}
   - component: {fileID: 4686668259971108505}
+  - component: {fileID: -2042888577995490839}
+  - component: {fileID: 6050632118889708049}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -138,8 +139,8 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 4135977548735882359}
-  - {fileID: 798535176698747854}
   - {fileID: -2318048824349883060}
+  - {fileID: 6050632118889708049}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &4135977548735882359
 MonoBehaviour:
@@ -158,19 +159,6 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 1
---- !u!114 &798535176698747854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4539026371784716626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 939a6ddb8142bfe47bc706c5997abe30, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TestPlayerMove
-  moveSpeed: 5
 --- !u!114 &-2318048824349883060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,12 +171,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fcf0cdd1344564428e650f4f760041a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
+  data: {fileID: 0}
   _playerName:
     _length: 0
     _data:
       Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   playerNameLabel: {fileID: 590153109676296962}
-  moveSpeed: 5
+  attackRange: 2
+  detectRange: 3
+  attackInterval: 1
+  _attackDamage: 0
+  _defense: 0
+  _attackSpeed: 0
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _StateType: 0
+  _CurrentHp: 0
+  _Target: {fileID: 0}
+  DespawnDelay: 2
 --- !u!54 &4686668259971108505
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -216,6 +217,41 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!195 &-2042888577995490839
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4539026371784716626}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &6050632118889708049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4539026371784716626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2226b2fb9ca9af248978ddae3f7852fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkNavMeshMover
+  _destination: {x: 0, y: 0, z: 0}
 --- !u!1 &4598527427996352404
 GameObject:
   m_ObjectHideFlags: 0

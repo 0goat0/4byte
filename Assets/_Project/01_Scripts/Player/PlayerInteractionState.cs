@@ -10,7 +10,8 @@ public enum PlayerInteractionMode
 public class PlayerInteractionState : MonoBehaviour
 {
     public ISelectable InfoTarget { get; private set; }
-    public bool CanCommand { get; private set; }
+    public NetworkParty CommandParty { get; private set; }
+    public bool CanCommand => CommandParty != null && CommandParty.Object.HasInputAuthority;
 
     public PlayerInteractionMode Mode { get; private set; }
 
@@ -20,15 +21,15 @@ public class PlayerInteractionState : MonoBehaviour
     /// 대상 좌클릭
     /// </summary>
     /// <param name="target"></param>
-    public void SetInfoTarget(ISelectable target, bool canCommand)
+    public void SetInfoTarget(ISelectable target, NetworkParty party)
     {
-        if (ReferenceEquals(InfoTarget, target) && CanCommand == canCommand)
+        if (ReferenceEquals(InfoTarget, target) && ReferenceEquals(CommandParty, party))
         {
             return;
         }
 
         InfoTarget = target;
-        CanCommand = canCommand;
+        CommandParty = party;
         Mode = PlayerInteractionMode.Default;
 
         OnSelectionChanged?.Invoke();
@@ -70,14 +71,14 @@ public class PlayerInteractionState : MonoBehaviour
     public void Reset()
     {
         if (InfoTarget == null &&
-            !CanCommand &&
+            CommandParty == null &&
             Mode == PlayerInteractionMode.Default)
         {
             return;
         }
 
         InfoTarget = null;
-        CanCommand = false;
+        CommandParty = null;
         Mode = PlayerInteractionMode.Default;
 
         OnSelectionChanged?.Invoke();

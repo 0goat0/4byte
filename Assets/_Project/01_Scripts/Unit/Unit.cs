@@ -37,29 +37,12 @@ public class Unit : NetworkBehaviour, ISelectable
 
     }
 
-    public void RequestMove(Vector3 destination)
-    {
-        RPC_RequestMove(destination);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestMove(Vector3 destination)
+    public void MoveTo(Vector3 destination)
     {
         _mover.MoveTo(destination);
     }
 
-    public void RequestAttackTarget(NetworkObject target)
-    {
-        RPC_RequestAttackTarget(target);
-    }
-
-    public void RequestAttackMove(Vector3 destination)
-    {
-        RPC_RequestAttackMove(destination);
-    }
-
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestAttackTarget(NetworkObject target)
+    public void AttackTarget(NetworkObject target)
     {
         // 요청이 전달되는 사이 대상이 디스폰될 수 있습니다.
         if (target == null)
@@ -70,8 +53,7 @@ public class Unit : NetworkBehaviour, ISelectable
         // 상태머신 구현 시 목표를 저장하고 Chase 또는 Attack으로 연결합니다.
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RPC_RequestAttackMove(Vector3 destination)
+    public void AttackMove(Vector3 destination)
     {
         Debug.Log($"공격 이동 요청: {destination}", this);
 

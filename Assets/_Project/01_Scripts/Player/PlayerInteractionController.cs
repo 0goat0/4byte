@@ -31,7 +31,7 @@ public class PlayerInteractionController : MonoBehaviour
         {
             // 공격 모드에서 빈 곳을 클릭했을 때 선택 유닛이 초기화되는 것을 방지
             if (playerState.Mode == PlayerInteractionMode.Default)
-                playerState.SetInfoTarget(null, false);
+                playerState.SetInfoTarget(null, null);
 
             return;
         }
@@ -56,22 +56,20 @@ public class PlayerInteractionController : MonoBehaviour
 
         if(selected == null)
         {
-            playerState.SetInfoTarget(selected, false);
+            playerState.SetInfoTarget(selected, null);
             return;
         }
 
-        bool canCommand = CanCommandTarget(hitObject);
+        PartyMember partyMember = hitObject.GetComponent<PartyMember>();
+        NetworkParty party = null;
 
-        playerState.SetInfoTarget(selected, canCommand);
+        if (partyMember != null)
+        {
+            party = partyMember.Party;
+        }
 
-    }
+        playerState.SetInfoTarget(selected, party);
 
-    private bool CanCommandTarget(GameObject hitObject)
-    {
-        NetworkObject networkObject = hitObject.GetComponent<NetworkObject>();
-
-        bool canCommand = networkObject != null && networkObject.HasInputAuthority;
-        return canCommand;
     }
 
     private void HandleMoveCommand(Vector2 pointerPosition)
@@ -91,10 +89,7 @@ public class PlayerInteractionController : MonoBehaviour
 
         Vector3 destination = hitInfo.point;
 
-        if (playerState.InfoTarget is Unit unit)
-        {
-            unit.RequestMove(destination);
-        }
+        playerState.CommandParty.RequestMove(destination);
     }
 
     /// <summary>
@@ -111,9 +106,6 @@ public class PlayerInteractionController : MonoBehaviour
         if (!playerState.CanCommand)
             return;
 
-        if (!(playerState.InfoTarget is Unit unit))
-            return;
-
         int hitLayerMask = 1 << hitInfo.collider.gameObject.layer;
 
         // Layer 에 따라 유닛의 함수 호출
@@ -126,12 +118,12 @@ public class PlayerInteractionController : MonoBehaviour
                 return;
 
             // 적을 클릭 할 경우 타겟 적의 Transform
-            unit.RequestAttackTarget(target);
+            playerState.CommandParty.RequestAttackTarget(target);
         }
         else if ((_groundMask.value & hitLayerMask) != 0)
         {
             // 땅을 클릭한 경우 클릭한 곳의 월드 좌표
-            unit.RequestAttackMove(hitInfo.point);
+            playerState.CommandParty.RequestAttackMove(hitInfo.point);
         }
         else
         {

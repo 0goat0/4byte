@@ -17,15 +17,13 @@ public enum PlayerAttackType
 public class PlayerData : ScriptableObject
 {
     //이름
-    public string enemyName;
+    public string PlayerName;
     //사이즈
     public PlayerSize size;
     //공격타입
     public PlayerAttackType attackType;
     //체력, 공격력, 방어력, 공격속도, 이동속도
     public float hp, attack, defense, attackSpeed, moveSpeed;
-    //드랍되는 골드량
-    public int goldDrop;
     //적 프리펩
     public GameObject Prefab;
 }

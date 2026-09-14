@@ -39,7 +39,6 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     [SerializeField] private LayerMask targetLayerMask;
     public float AttackInterval { get { return attackInterval; } }
     [SerializeField] private float attackInterval;
-   
 
     public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
 
@@ -169,7 +168,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             return;
         }
         CurrentHp -= damage;
-
+        Target = attacker;
         if(CurrentHp <= 0f)
         {
             CurrentHp = 0f;

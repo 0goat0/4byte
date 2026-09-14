@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   data: {fileID: 11400000, guid: c3b9c52fda16bf140aa57ea4918f58d7, type: 2}
   attackRange: 4
-  detectRange: 4
+  detectRange: 10
   targetLayerMask:
     serializedVersion: 2
     m_Bits: 64

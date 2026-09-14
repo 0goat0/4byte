@@ -1005,13 +1005,14 @@ MonoBehaviour:
   minSpawnRadius: 22
   maxSpawnRadius: 44
   checkRadius: 2
-  enemyNum: 10
+  maxEnemyNum: 20
+  waveEnemyNum: 3
   waveSpawnInterval: 10
-  singleSpawnInterval: 2
+  singleSpawnInterval: 5
   obstacleMask:
     serializedVersion: 2
     m_Bits: 128
-  burstEnemyNum: 0
+  burstEnemyNum: 3
   burstSpawnInterval: 0.1
 --- !u!4 &1071110737
 Transform:
@@ -1426,13 +1427,14 @@ MonoBehaviour:
   minSpawnRadius: 22
   maxSpawnRadius: 44
   checkRadius: 2
-  enemyNum: 10
+  maxEnemyNum: 20
+  waveEnemyNum: 3
   waveSpawnInterval: 10
-  singleSpawnInterval: 2
+  singleSpawnInterval: 3
   obstacleMask:
     serializedVersion: 2
     m_Bits: 0
-  burstEnemyNum: 0
+  burstEnemyNum: 3
   burstSpawnInterval: 0.1
 --- !u!4 &2132333868
 Transform:

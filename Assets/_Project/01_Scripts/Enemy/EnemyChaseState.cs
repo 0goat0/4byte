@@ -2,6 +2,7 @@
 
 public class EnemyChaseState : IEnemyState
 {
+    private const float AttackEnterBuffer = 1f;
     public void Enter(EnemyAI enemy)
     {
         //Debug.Log("추적시작");
@@ -30,6 +31,12 @@ public class EnemyChaseState : IEnemyState
         if (distance <= enemy.AttackRange)
         {
             enemy.ChangeState(EnemyStateType.Attack);
+            return;
+        }
+        if(distance - AttackEnterBuffer > enemy.DetectRange)
+        {
+            enemy.ChangeState(EnemyStateType.Idle);
+            enemy.Target = null;
             return;
         }
 

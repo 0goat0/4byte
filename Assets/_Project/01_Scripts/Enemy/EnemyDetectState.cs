@@ -19,7 +19,7 @@ public class EnemyDetectState : IEnemyState
 
     public void Tick(EnemyAI enemy)
     {
-        if(enemy.Target == null)
+        if (enemy.Target == null)
         {
             enemy.ChangeState(EnemyStateType.Idle);
             return;

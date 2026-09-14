@@ -12,7 +12,8 @@ public class EnemySpawner : NetworkBehaviour
     [SerializeField] private float minSpawnRadius;   // 건물과 너무 붙지 않도록 최소 거리
     [SerializeField] private float maxSpawnRadius;   // 스폰 가능한 최대 거리
     [SerializeField] private float checkRadius;    // 몬스터 크기에 맞춰 조절 (겹침 검사용)
-    [SerializeField] private int enemyNum;
+    [SerializeField] private int maxEnemyNum;
+    [SerializeField] private int waveEnemyNum;
     [Networked] private int RemainingInWave { get; set; }
 
     [Header("Spawn Timing")]
@@ -39,7 +40,7 @@ public class EnemySpawner : NetworkBehaviour
         if (pooledProvider != null)
         {
             // 미리 enemyNum개 채워두기
-            pooledProvider.Prewarm(Runner, enemyPrefab, enemyNum);
+            pooledProvider.Prewarm(Runner, enemyPrefab, waveEnemyNum);
 
             // 현재 풀에 몇 개 남았는지 확인
             //int count = pooledProvider.GetPoolCount(enemyPrefab);
@@ -65,10 +66,6 @@ public class EnemySpawner : NetworkBehaviour
         }
         //e = enemy
         spawnedEnemies.RemoveAll(e => e == null || !e.IsValid);
-        if (enemyNum < spawnedEnemies.Count)
-        {
-            return;
-        }
         if (RemainingInBurst > 0)
         {
             if (!BurstTimer.ExpiredOrNotRunning(Runner)) return;
@@ -100,8 +97,11 @@ public class EnemySpawner : NetworkBehaviour
         {
             return;
         } 
-
-        RemainingInWave = enemyNum; // 이번 웨이브에 낼 마릿수
+         if (maxEnemyNum <= spawnedEnemies.Count)
+        {
+            return;
+        }
+        RemainingInWave = waveEnemyNum; // 이번 웨이브에 낼 마릿수
        
     }
     private void SpawnEnemy(Vector3 pos)

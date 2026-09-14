@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class EnemyAttackState : IEnemyState
 {
+    private const float AttackExitBuffer = 1.5f;
     public void Enter(EnemyAI enemy)
     {
         //공격 상태 진입
@@ -12,7 +13,6 @@ public class EnemyAttackState : IEnemyState
         }
         enemy.Mover.Stop();
         Debug.Log("공격시작");
-        enemy.AttackCooldown = TickTimer.None;
         enemy.Animator.SetState(EnemyStateType.Attack);
     }
 
@@ -33,7 +33,7 @@ public class EnemyAttackState : IEnemyState
         float distance = Vector3.Distance(enemy.transform.position, targetPos);
 
         //타겟이 공격 범위 밖으로 나가면 다시 추격
-        if (distance > enemy.AttackRange)
+        if (distance > enemy.AttackRange + AttackExitBuffer)
         {
             enemy.ChangeState(EnemyStateType.Chase);
             return;

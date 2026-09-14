@@ -15,6 +15,7 @@ public enum PlayerStateType
     Idle,
     Detect,
     Chase,
+    Move,
     Attack,
     Dead
 }
@@ -44,6 +45,8 @@ public class PlayerStats : NetworkBehaviour
     [Networked] public float attackDamage {  get; set; }
     [Networked] public float defense {  get; set; }
     [Networked] public float attackSpeed {  get; set; }
+    [Networked] public float MoveSpeed { get; set; }
+
 
     [SerializeField] private LayerMask targetLayerMask;
     public LayerMask TargetLayerMask { get { return targetLayerMask; } }
@@ -73,16 +76,19 @@ public class PlayerStats : NetworkBehaviour
     }
     public override void Spawned()
     {
-            stateDic = new Dictionary<PlayerStateType, IPlayerState>();
-            stateDic.Add(PlayerStateType.Idle, new PlayerIdleState());
-            stateDic.Add(PlayerStateType.Detect, new PlayerDetectState());
-            stateDic.Add(PlayerStateType.Chase, new PlayerChaseState());
-            stateDic.Add(PlayerStateType.Attack, new PlayerAttackState());
-            stateDic.Add(PlayerStateType.Dead, new PlayerDeadState());
-        
+        stateDic = new Dictionary<PlayerStateType, IPlayerState>();
+        stateDic.Add(PlayerStateType.Idle, new PlayerIdleState());
+        stateDic.Add(PlayerStateType.Detect, new PlayerDetectState());
+        stateDic.Add(PlayerStateType.Chase, new PlayerChaseState());
+        stateDic.Add(PlayerStateType.Move, new PlayerMoveState());
+        stateDic.Add(PlayerStateType.Attack, new PlayerAttackState());
+        stateDic.Add(PlayerStateType.Dead, new PlayerDeadState());
+
+
         if (Object.HasStateAuthority)
         {
-            ChangeState(PlayerStateType.Idle);
+            MoveSpeed = 3f;
+            ChangeState(PlayerStateType.Move);
         }
         #region Name
         if (Object.HasInputAuthority)
@@ -167,6 +173,7 @@ public class PlayerStats : NetworkBehaviour
         currentState = stateDic[StateType];
         currentState.Enter(this);
     }
+
 
     public void TakeDamage(float damage)
     {

@@ -8,12 +8,12 @@ public class TestPlayerMove : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (GetInput(out NetworkInputData data))
-        {
-            Vector3 moveDirection = data.movementInput.normalized;
+        //if (GetInput(out NetworkInputData data))
+        //{
+        //    Vector3 moveDirection = data.movementInput.normalized;
 
-            // NetworkTransform이 위치를 부드럽게 보간
-            transform.position += moveDirection * moveSpeed * Runner.DeltaTime;
-        }
+        //    // NetworkTransform이 위치를 부드럽게 보간
+        //    transform.position += moveDirection * moveSpeed * Runner.DeltaTime;
+        //}
     }
 }

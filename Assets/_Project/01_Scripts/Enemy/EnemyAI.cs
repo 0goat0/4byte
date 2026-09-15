@@ -118,6 +118,9 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     }
     public void ChangeState(EnemyStateType state)
     {
+        if (!HasStateAuthority)
+            return;
+
         if(StateType == state)
         {
             return;

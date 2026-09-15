@@ -1,7 +1,6 @@
 ﻿using Fusion;
 using System.Collections.Generic;
 using TMPro;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
 public interface IPlayerState
@@ -17,10 +16,11 @@ public enum PlayerStateType
     Chase,
     Move,
     Attack,
+    AttackMove,
     Dead
 }
 
-public class PlayerStats : NetworkBehaviour
+public class PlayerStats : NetworkBehaviour, IDamageable
 {
     [Header("Data")]
     //이름, 크기(소형, 중형, 대형), 공격타입(근접, 원거리, 광역)
@@ -53,7 +53,7 @@ public class PlayerStats : NetworkBehaviour
 
     //상태 체크
     [Networked, OnChangedRender(nameof(OnStateTypeChanged))]
-    public PlayerStateType StateType { get; set; }
+    public PlayerStateType StateType { get; private set; }
     [Networked] public float CurrentHp { get; set; }
     [Networked] public NetworkObject Target { get; set; }
     [Networked] public TickTimer AttackCooldown { get; set; } // 쿨타임 타이머
@@ -61,13 +61,17 @@ public class PlayerStats : NetworkBehaviour
     [Networked] public TickTimer DeathTimer { get; set; }
     public float DespawnDelay = 2f;
 
-    public PlayerAnimeController Animator { get; set; }
-    public NetworkNavMeshMover Mover { get; set; }
+    [Networked]
+    public Vector3 CommandDestination { get; private set; }
 
-    private Dictionary<PlayerStateType, IPlayerState> stateDic;
-    private IPlayerState currentState;
+    public PlayerAnimeController Animator { get; private set; }
+    public NetworkNavMeshMover Mover { get; private set; }
 
-    private bool _isFsmInitialized = false;
+    private const int TargetBufferCapacity = 16;
+
+    private readonly Collider[] _targetResults = new Collider[TargetBufferCapacity];
+    private Dictionary<PlayerStateType, IPlayerState> _states;
+    private IPlayerState _currentState;
 
     private void Awake()
     {
@@ -76,20 +80,41 @@ public class PlayerStats : NetworkBehaviour
     }
     public override void Spawned()
     {
-        stateDic = new Dictionary<PlayerStateType, IPlayerState>();
-        stateDic.Add(PlayerStateType.Idle, new PlayerIdleState());
-        stateDic.Add(PlayerStateType.Detect, new PlayerDetectState());
-        stateDic.Add(PlayerStateType.Chase, new PlayerChaseState());
-        stateDic.Add(PlayerStateType.Move, new PlayerMoveState());
-        stateDic.Add(PlayerStateType.Attack, new PlayerAttackState());
-        stateDic.Add(PlayerStateType.Dead, new PlayerDeadState());
+        _states = new Dictionary<PlayerStateType, IPlayerState>
+        {
+            { PlayerStateType.Idle, new PlayerIdleState() },
+            { PlayerStateType.Detect, new PlayerDetectState() },
+            { PlayerStateType.Chase, new PlayerChaseState() },
+            { PlayerStateType.Move, new PlayerMoveState() },
+            { PlayerStateType.Attack, new PlayerAttackState() },
+            { PlayerStateType.AttackMove, new PlayerAttackMoveState() },
+            { PlayerStateType.Dead, new PlayerDeadState() }
+        };
 
 
         if (Object.HasStateAuthority)
         {
-            MoveSpeed = 3f;
-            ChangeState(PlayerStateType.Move);
+            if (data != null)
+            {
+                CurrentHp = data.hp;
+                attackDamage = data.attack;
+                defense = data.defense;
+                attackSpeed = data.attackSpeed;
+                MoveSpeed = data.moveSpeed;
+            }
+            else
+            {
+                MoveSpeed = 3f;
+                Debug.LogWarning("PlayerData is not assigned.", this);
+            }
+
+            ChangeState(PlayerStateType.Idle);
         }
+        else
+        {
+            ApplyStateVisual(StateType);
+        }
+
         #region Name
         if (Object.HasInputAuthority)
         {
@@ -109,16 +134,10 @@ public class PlayerStats : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        //판정은 호스트만 하도록
         if (!HasStateAuthority)
-        {
             return;
-        }
-        //그 상태를 반복해서 서버에서 검사하도록.
-        if (currentState != null)
-        {
-            currentState.Tick(this);
-        }
+
+        _currentState?.Tick(this);
     }
 
     #region Name
@@ -145,55 +164,40 @@ public class PlayerStats : NetworkBehaviour
     }
     #endregion
 
-    public void ChangeState(PlayerStateType state)
+    public void ChangeState(PlayerStateType stateType)
     {
-        if (StateType == state && currentState != null)
+        if (!HasStateAuthority)
+            return;
+
+        if (!_states.TryGetValue(stateType, out IPlayerState nextState))
         {
+            Debug.LogError($"등록되지 않은 상태입니다: {stateType}", this);
             return;
         }
-        if(currentState != null)
-        {
-            currentState.Exit(this);
-        }
-        StateType = state;
-        currentState = stateDic[state];
 
-        if (currentState != null)
-        {
-            currentState.Enter(this);
-        }
+        _currentState?.Exit(this);
+
+        StateType = stateType;
+        _currentState = nextState;
+
+        ApplyStateVisual(stateType);
+        _currentState.Enter(this);
     }
+
     private void OnStateTypeChanged()
     {
-        //이미 호스트는 change에서 변경을 했으므로 생략
         if (HasStateAuthority)
-        {
             return;
-        }
-        currentState = stateDic[StateType];
-        currentState.Enter(this);
+
+        ApplyStateVisual(StateType);
     }
 
-
-    public void TakeDamage(float damage)
+    private void ApplyStateVisual(PlayerStateType stateType)
     {
-        //접근 권한은 호스트에게
-        if (!HasStateAuthority)
-        {
+        if (Animator == null)
             return;
-        }
-        //이미 죽은 상태일 때 무시
-        if (StateType == PlayerStateType.Dead)
-        {
-            return;
-        }
-        CurrentHp -= damage;
 
-        if (CurrentHp <= 0f)
-        {
-            CurrentHp = 0f;
-            ChangeState(PlayerStateType.Dead);
-        }
+        Animator.SetState(stateType);
     }
 
     //스텟 업글
@@ -203,10 +207,98 @@ public class PlayerStats : NetworkBehaviour
         attackDamage += addDamage;
         defense += addDefense;
     }
-    public void ChangeState(IPlayerState newState)
+    public void CommandMove(Vector3 destination)
     {
-        if (currentState != null) currentState.Exit(this);
-        currentState = newState;
-        if (currentState != null) currentState.Enter(this);
+        if (!HasStateAuthority ||
+            StateType == PlayerStateType.Dead)
+        {
+            return;
+        }
+
+        Target = null;
+        CommandDestination = destination;
+
+        ChangeState(PlayerStateType.Move);
+    }
+
+    public void CommandAttackTarget(NetworkObject target)
+    {
+        if (!HasStateAuthority ||
+            target == null ||
+            StateType == PlayerStateType.Dead)
+        {
+            return;
+        }
+
+        Target = target;
+
+        ChangeState(PlayerStateType.Chase);
+    }
+
+
+    public void CommandAttackMove(Vector3 destination)
+    {
+        if (!HasStateAuthority ||
+            StateType == PlayerStateType.Dead)
+        {
+            return;
+        }
+
+        Target = null;
+        CommandDestination = destination;
+
+        ChangeState(PlayerStateType.AttackMove);
+    }
+
+    public bool TryFindTarget(out NetworkObject target)
+    {
+        target = null;
+
+        if (!HasStateAuthority)
+            return false;
+
+        int count = Physics.OverlapSphereNonAlloc(
+            transform.position,
+            DetectRange,
+            _targetResults,
+            TargetLayerMask,
+            QueryTriggerInteraction.Ignore);
+
+        float nearestDistanceSqr = float.MaxValue;
+
+        for (int i = 0; i < count; i++)
+        {
+            NetworkObject candidate =
+                _targetResults[i].GetComponentInParent<NetworkObject>();
+
+            if (candidate == null || candidate == Object)
+                continue;
+
+            float distanceSqr =
+                (candidate.transform.position - transform.position).sqrMagnitude;
+
+            if (distanceSqr >= nearestDistanceSqr)
+                continue;
+
+            nearestDistanceSqr = distanceSqr;
+            target = candidate;
+        }
+
+        return target != null;
+    }
+
+    public void TakeDamage(float damage, NetworkObject attacker)
+    {
+        //접근 권한은 호스트에게
+        if (!HasStateAuthority || StateType == PlayerStateType.Dead)
+            return;
+
+        CurrentHp -= damage;
+
+        if (CurrentHp <= 0f)
+        {
+            CurrentHp = 0f;
+            ChangeState(PlayerStateType.Dead);
+        }
     }
 }

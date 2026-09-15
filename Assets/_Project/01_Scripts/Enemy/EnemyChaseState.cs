@@ -3,10 +3,17 @@
 public class EnemyChaseState : IEnemyState
 {
     private const float AttackEnterBuffer = 1f;
+    private const float RepathDistanceSqr = 0.25f;
+
+    private Vector3 _lastTargetPosition;
+
     public void Enter(EnemyAI enemy)
     {
         //Debug.Log("추적시작");
         enemy.Animator.SetState(EnemyStateType.Chase);
+
+        _lastTargetPosition = enemy.Target.transform.position;
+        enemy.Mover.MoveTo(_lastTargetPosition);
     }
 
     public void Exit(EnemyAI enemy)
@@ -40,7 +47,11 @@ public class EnemyChaseState : IEnemyState
             return;
         }
 
-        //enemy.agent.SetDestination(targetPos);
-        enemy.Mover.MoveTo(targetPos);
+        // 타겟이 기존 위치에서 일정거리 벗어날 경우 목적지 재설정
+        if ((targetPos - _lastTargetPosition).sqrMagnitude < RepathDistanceSqr)
+            return;
+
+        _lastTargetPosition = targetPos;
+        enemy.Mover.UpdateDestination(targetPos);
     }
 }

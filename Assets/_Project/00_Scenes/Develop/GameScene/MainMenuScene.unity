@@ -6760,7 +6760,10 @@ MonoBehaviour:
   connectOnAwake: 0
   _runnerPrefab: {fileID: 1580327832357904236, guid: 74303b609d8823843916e22f373e4722, type: 3}
   runner: {fileID: 0}
-  playerPrefab: {fileID: 1160613095927867265, guid: 77f87eac40d36614a9f1fe44490c529e, type: 3}
+  _partyPrefab: {fileID: 7100000000000000003, guid: 407a97362f3e4bba87c5903d2d83bc14, type: 3}
+  _initialUnitPrefab: {fileID: 1160613095927867265, guid: 77f87eac40d36614a9f1fe44490c529e, type: 3}
+  _spawnOrigin: {x: 8, y: 0, z: -8}
+  _spawnSpacing: 2
   _playerName: 
   roomListPanel: {fileID: 2087799551}
   refreshButton: {fileID: 606730954}

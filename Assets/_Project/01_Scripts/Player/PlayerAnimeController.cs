@@ -18,7 +18,12 @@ public class PlayerAnimeController : MonoBehaviour
     // FSM 상태(Chase/Attack)에 맞춰 bool만 갱신
     public void SetState(PlayerStateType state)
     {
-        animator.SetBool(IsChasing, state == PlayerStateType.Chase);
+        bool isMoving =
+            state == PlayerStateType.Move ||
+            state == PlayerStateType.Chase ||
+            state == PlayerStateType.AttackMove;
+
+        animator.SetBool(IsChasing, isMoving);
         animator.SetBool(IsAttacking, state == PlayerStateType.Attack);
     }
 

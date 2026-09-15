@@ -6,12 +6,7 @@ public class EnemyAttackState : IEnemyState
     private const float AttackExitBuffer = 1.5f;
     public void Enter(EnemyAI enemy)
     {
-        //공격 상태 진입
-        if(enemy.Mover != null)
-        {
-            enemy.Mover.Stop();
-        }
-        enemy.Mover.Stop();
+        enemy.Mover?.Stop();
         Debug.Log("공격시작");
         enemy.Animator.SetState(EnemyStateType.Attack);
     }

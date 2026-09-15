@@ -3,13 +3,11 @@ using Fusion;
 
 public class PlayerChaseState : IPlayerState
 {
-    public void Enter(PlayerStats player)
-    {
-        Debug.Log("추적시작");
-        player.Animator.SetState(PlayerStateType.Chase);
-    }
+    private const float RepathDistanceSqr = 0.25f;
 
-    public void Tick(PlayerStats player)
+    private Vector3 _lastTargetPosition;
+
+    public void Enter(PlayerStats player)
     {
         if (player.Target == null)
         {
@@ -17,28 +15,44 @@ public class PlayerChaseState : IPlayerState
             return;
         }
 
-        float distance = Vector3.Distance(player.transform.position, player.Target.transform.position);
+        _lastTargetPosition = player.Target.transform.position;
+        player.Mover.MoveTo(_lastTargetPosition);
+    }
 
-        if (distance > player.DetectRange)
+    public void Tick(PlayerStats player)
+    {
+        if (player.Target == null || !player.Target.gameObject.activeInHierarchy)
         {
             player.ChangeState(PlayerStateType.Idle);
             return;
         }
 
-        if (distance <= player.AttackRange)
+        Vector3 targetPosition = player.Target.transform.position;
+        float distanceSqr =
+            (targetPosition - player.transform.position).sqrMagnitude;
+
+        if (distanceSqr > player.DetectRange * player.DetectRange)
+        {
+            player.ChangeState(PlayerStateType.Idle);
+            return;
+        }
+
+        if (distanceSqr <= player.AttackRange * player.AttackRange)
         {
             player.ChangeState(PlayerStateType.Attack);
             return;
         }
 
-        if (player.Mover != null)
-        {
-            player.Mover.MoveTo(player.Target.transform.position);
-        }
+        if ((targetPosition - _lastTargetPosition).sqrMagnitude <
+            RepathDistanceSqr)
+            return;
+
+        _lastTargetPosition = targetPosition;
+        player.Mover.UpdateDestination(targetPosition);
     }
 
     public void Exit(PlayerStats player)
     {
-        if (player.Mover != null) player.Mover.Stop();
+        player.Mover?.Stop();
     }
 }

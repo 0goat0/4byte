@@ -89,4 +89,13 @@ public class NetworkNavMeshMover : NetworkBehaviour
 
         _hasActiveDestination = false;
     }
+
+    public void UpdateDestination(Vector3 destination)
+    {
+        if (!Object.HasStateAuthority)
+            return;
+
+        _destination = destination;
+        _agent.SetDestination(_destination);
+    }
 }

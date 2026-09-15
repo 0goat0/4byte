@@ -1,4 +1,4 @@
-﻿using Fusion;
+using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
@@ -13,11 +13,18 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     public bool connectOnAwake = false;
     [SerializeField] private NetworkRunner _runnerPrefab;
     public NetworkRunner runner;
-    [SerializeField] NetworkObject playerPrefab;
+
+    [Header("Player Spawn")]
+    [SerializeField] private NetworkObject _partyPrefab;
+    [SerializeField] private NetworkObject _initialUnitPrefab;
+    [SerializeField] private Vector3 _spawnOrigin = new Vector3(8f, 0f, -8f);
+    [SerializeField] private float _spawnSpacing = 2f;
+
     public string _playerName = null;
 
     private bool isConnecting = false;
     private bool isInLobby = false;
+    private readonly Dictionary<PlayerRef, NetworkObject> _spawnedUnits = new();
 
     [Header("Session List")]
     public GameObject roomListPanel;
@@ -276,34 +283,83 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     // 호스트 Spawn 권한
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
-        // 호스트만 플레이어 스폰
         if (!runner.IsServer)
             return;
 
-        Debug.Log($"Character Spawn for Player: {player.PlayerId}");
-
-        // playerObject 를 스폰한 후 접속한 player 에게 입력권한 부여
-        NetworkObject playerObject = runner.Spawn(playerPrefab, new Vector3(8, 0, -8), Quaternion.identity, player);
-
-        // 생성한 오브젝트를 플레이어 대표 캐릭터로 설정
-        runner.SetPlayerObject(player, playerObject);
-        
-        Debug.Log("OnPlayerJoined 완료");
+        SpawnPlayerParty(runner, player);
     }
+
+    private void SpawnPlayerParty(NetworkRunner runner, PlayerRef player)
+    {
+        if (runner.TryGetPlayerObject(player, out _))
+            return;
+
+        if (_partyPrefab == null || _initialUnitPrefab == null)
+        {
+            Debug.LogError("Party spawn prefabs are not assigned.", this);
+            return;
+        }
+
+        Vector3 spawnPosition =
+            _spawnOrigin + Vector3.right * (_spawnSpacing * player.PlayerId);
+
+        NetworkObject partyObject = runner.Spawn(
+            _partyPrefab,
+            spawnPosition,
+            Quaternion.identity,
+            player);
+
+        NetworkObject unitObject = runner.Spawn(
+            _initialUnitPrefab,
+            spawnPosition,
+            Quaternion.identity);
+
+        NetworkParty party = partyObject.GetComponent<NetworkParty>();
+        PartyMember partyMember = unitObject.GetComponent<PartyMember>();
+
+        if (party == null || partyMember == null ||
+            !party.TryAddMember(partyMember))
+        {
+            runner.Despawn(unitObject);
+            runner.Despawn(partyObject);
+
+            Debug.LogError(
+                $"Failed to create the initial party for Player {player.PlayerId}.");
+            return;
+        }
+
+        runner.SetPlayerObject(player, partyObject);
+        _spawnedUnits[player] = unitObject;
+
+        Debug.Log($"Party Spawned for Player: {player.PlayerId}");
+    }
+
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
     {
-        if (runner.IsServer)
+        if (!runner.IsServer)
+            return;
+
+        runner.TryGetPlayerObject(player, out NetworkObject partyObject);
+        _spawnedUnits.TryGetValue(player, out NetworkObject unitObject);
+
+        if (partyObject != null && unitObject != null)
         {
-            // 네트워크 객체를 탐색
-            if (runner.TryGetPlayerObject(player, out NetworkObject playerObject))
-            {
-                if (playerObject != null)
-                {
-                    runner.Despawn(playerObject);
-                }
-            }
-            runner.SetPlayerObject(player, null);
+            NetworkParty party = partyObject.GetComponent<NetworkParty>();
+            PartyMember partyMember = unitObject.GetComponent<PartyMember>();
+
+            if (party != null && partyMember != null)
+                party.TryRemoveMember(partyMember);
         }
+
+        runner.SetPlayerObject(player, null);
+
+        if (unitObject != null)
+            runner.Despawn(unitObject);
+
+        if (partyObject != null)
+            runner.Despawn(partyObject);
+
+        _spawnedUnits.Remove(player);
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
@@ -328,6 +384,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {
         isInLobby = false;
+        _spawnedUnits.Clear();
     }
 
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason)

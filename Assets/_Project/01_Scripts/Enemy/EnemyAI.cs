@@ -35,11 +35,13 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     [SerializeField] private float attackRange;
     public float AttackRange { get { return attackRange; }}
     [SerializeField] private float detectRange;
-    public float DetectRange { get { return detectRange; }}
+    public float DetectRange => detectRange * (IsAlerted ? alertedDetectMultiplier : 1f);
+    public float BaseDetectRange => detectRange;
     [SerializeField] private LayerMask targetLayerMask;
     public float AttackInterval { get { return attackInterval; } }
     [SerializeField] private float attackInterval;
-
+    [SerializeField] private float alertedDetectMultiplier;
+    [Networked] public bool IsAlerted { get; set; }
     public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
 
 
@@ -95,6 +97,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             CurrentHp = data.hp;
             StateType = EnemyStateType.Idle;
             Target = null;
+            IsAlerted = false;
             AttackCooldown = TickTimer.None;
             DetectTimer = TickTimer.None;
             DeathTimer = TickTimer.None;
@@ -169,7 +172,8 @@ public class EnemyAI : NetworkBehaviour, IDamageable
         }
         CurrentHp -= damage;
         Target = attacker;
-        if(CurrentHp <= 0f)
+        IsAlerted = true;
+        if (CurrentHp <= 0f)
         {
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
@@ -189,5 +193,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable
         Gizmos.DrawWireSphere(transform.position, attackRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, detectRange * alertedDetectMultiplier);
     }
 }

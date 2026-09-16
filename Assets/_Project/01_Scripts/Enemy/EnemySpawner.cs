@@ -4,9 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Unity.Collections.Unicode;
 
-public class EnemySpawner : NetworkBehaviour
+public class EnemySpawner : NetworkBehaviour, IDamageable
 {
     [SerializeField] private NetworkObject enemyPrefab;
+
+    [Header("Spawner Health")]
+    [SerializeField] private float maxHp = 100f;
+    [Networked] private float CurrentHp { get; set; }
+    [Networked] public NetworkBool IsDestroyed { get; set; }
+
 
     [Header("Spawn Area")]
     [SerializeField] private float minSpawnRadius;   // 건물과 너무 붙지 않도록 최소 거리
@@ -34,6 +40,11 @@ public class EnemySpawner : NetworkBehaviour
     [Networked] private int RemainingInBurst { get; set; }
     public override void Spawned()
     {
+        if (HasStateAuthority)
+        {
+            CurrentHp = maxHp;
+        }
+
         // Runner의 GameObject에서 PooledNetworkObjectProvider 컴포넌트를 찾아옴
         var pooledProvider = Runner.GetComponent<PooledNetworkObjectProvider>();
 
@@ -56,6 +67,10 @@ public class EnemySpawner : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority)
+        {
+            return;
+        }
+        if (IsDestroyed)
         {
             return;
         }
@@ -156,5 +171,36 @@ public class EnemySpawner : NetworkBehaviour
         Collider[] hits = Physics.OverlapSphere(pos, checkRadius, obstacleMask);
         return hits.Length == 0;
     }
+    public void TakeDamage(float damage, NetworkObject attacker)
+    {
+        // 데미지 처리는 StateAuthority에서만
+        if (!HasStateAuthority) 
+        { 
+            return; 
+        }
+        if (IsDestroyed) 
+        { 
+            return; 
+        }
 
+        CurrentHp -= damage;
+        if (CurrentHp <= 0f)
+        {
+            OnSpawnerDestroyed();
+        } 
+    }
+    private void OnSpawnerDestroyed()
+    {
+        IsDestroyed = true;
+
+        // 진행 중이던 스폰 예약 초기화
+        RemainingInWave = 0;
+        RemainingInBurst = 0;
+        SpawnTimer = default;
+        WaveTimer = default;
+        BurstTimer = default;
+
+        // 오브젝트 자체를 없앰
+        Runner.Despawn(Object);
+    }
 }

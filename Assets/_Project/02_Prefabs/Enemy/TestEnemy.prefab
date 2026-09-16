@@ -140,6 +140,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   attackInterval: 1
+  alertedDetectMultiplier: 2
+  _IsAlerted: 0
   _StateType: 0
   _CurrentHp: 0
   _Target: {fileID: 0}

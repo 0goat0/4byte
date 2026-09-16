@@ -32,8 +32,8 @@ public class EnemyChaseState : IEnemyState
         Vector3 targetPos = enemy.Target.transform.position;
 
         //타겟과의 거리를 계속 계산
-        float distance = Vector3.Distance(enemy.transform.position, targetPos);
-
+        //float distance = Vector3.Distance(enemy.transform.position, targetPos);
+        float distance = DistanceUtil.GetDistanceToTarget(enemy.transform.position, enemy.Target);
         //설정한 공격 사거리 안에 들어오면 공격상태 진입
         if (distance <= enemy.AttackRange)
         {

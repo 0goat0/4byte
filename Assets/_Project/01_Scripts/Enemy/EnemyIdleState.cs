@@ -5,13 +5,14 @@ public class EnemyIdleState : IEnemyState
 {
     public void Enter(EnemyAI enemy)
     {
+        enemy.IsAlerted = false;
         //if(enemy.agent != null)
         //{
         //    enemy.agent.isStopped = false;
         //    enemy.agent.speed = 10f;
         //    enemy.agent.SetDestination(TargetDestination.Instance.transform.position);
         //}
-        if(enemy.Mover != null)
+        if (enemy.Mover != null)
         {
             enemy.Mover.MoveTo(TargetDestination.Instance.transform.position);
         }

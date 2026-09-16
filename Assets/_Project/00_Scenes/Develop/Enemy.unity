@@ -972,63 +972,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1071110735
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1071110737}
-  - component: {fileID: 1071110736}
-  m_Layer: 0
-  m_Name: EnemySpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1071110736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1071110735}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44475eea9d6c56e46aeaaa99ced96b18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 6896496255936228643, guid: 12324ad8a254bc74ab715035f3df6982, type: 3}
-  minSpawnRadius: 22
-  maxSpawnRadius: 44
-  checkRadius: 2
-  maxEnemyNum: 20
-  waveEnemyNum: 3
-  waveSpawnInterval: 10
-  singleSpawnInterval: 5
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 128
-  burstEnemyNum: 3
-  burstSpawnInterval: 0.1
---- !u!4 &1071110737
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1071110735}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1081028853}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1081028851
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1040,6 +983,22 @@ PrefabInstance:
     - target: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       propertyPath: m_Name
       value: EnemySpawner
+      objectReference: {fileID: 0}
+    - target: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123328054261425747, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3282622793581354433, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3853756765072428929, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1081,25 +1040,35 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4513819968265756102, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5506634040351415511, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894010333886927608, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1071110737}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1081028854}
+    - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1081028855}
+    - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1081028856}
   m_SourcePrefab: {fileID: 100100000, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
 --- !u!1 &1081028852 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
-  m_PrefabInstance: {fileID: 1081028851}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1081028853 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
   m_PrefabInstance: {fileID: 1081028851}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1081028854
@@ -1119,8 +1088,57 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 1071110736}
+  - {fileID: 1081028855}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &1081028855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081028852}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44475eea9d6c56e46aeaaa99ced96b18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyPrefab: {fileID: 6896496255936228643, guid: 12324ad8a254bc74ab715035f3df6982, type: 3}
+  maxHp: 100
+  _IsDestroyed:
+    _value: 0
+  minSpawnRadius: 22
+  maxSpawnRadius: 44
+  checkRadius: 2
+  maxEnemyNum: 6
+  waveEnemyNum: 2
+  waveSpawnInterval: 10
+  singleSpawnInterval: 5
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 128
+  burstEnemyNum: 2
+  burstSpawnInterval: 0.1
+--- !u!135 &1081028856
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081028852}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 15
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1111527709
 GameObject:
   m_ObjectHideFlags: 0
@@ -1147,7 +1165,7 @@ Transform:
   m_GameObject: {fileID: 1111527709}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.3, y: 0.5, z: -23}
+  m_LocalPosition: {x: 39.8, y: 0.5, z: -19.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1176,6 +1194,22 @@ PrefabInstance:
     - target: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       propertyPath: m_Name
       value: EnemySpawner (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3123328054261425747, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3282622793581354433, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3853756765072428929, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1217,25 +1251,35 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4513819968265756102, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5506634040351415511, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894010333886927608, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2132333868}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1120992882}
+    - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1120992884}
+    - targetCorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1120992883}
   m_SourcePrefab: {fileID: 100100000, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
 --- !u!1 &1120992880 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2439211918883189755, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
-  m_PrefabInstance: {fileID: 1120992879}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1120992881 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4487655963291679951, guid: a0bbd13c2c2e2f447bdd871d0f1c300e, type: 3}
   m_PrefabInstance: {fileID: 1120992879}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1120992882
@@ -1255,8 +1299,59 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 2132333867}
+  - {fileID: 1120992883}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &1120992883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120992880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44475eea9d6c56e46aeaaa99ced96b18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyPrefab: {fileID: 6896496255936228643, guid: 0493d71be97a55d4c8d5c1ea552e7c26, type: 3}
+  maxHp: 100
+  _IsDestroyed:
+    _value: 0
+  minSpawnRadius: 22
+  maxSpawnRadius: 44
+  checkRadius: 2
+  maxEnemyNum: 20
+  waveEnemyNum: 3
+  waveSpawnInterval: 10
+  singleSpawnInterval: 3
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 64
+  burstEnemyNum: 3
+  burstSpawnInterval: 0.1
+--- !u!136 &1120992884
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120992880}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 20
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2039230816
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,63 +1489,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1 &2132333866
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2132333868}
-  - component: {fileID: 2132333867}
-  m_Layer: 0
-  m_Name: EnemySpawner
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2132333867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2132333866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 44475eea9d6c56e46aeaaa99ced96b18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 6896496255936228643, guid: 0493d71be97a55d4c8d5c1ea552e7c26, type: 3}
-  minSpawnRadius: 22
-  maxSpawnRadius: 44
-  checkRadius: 2
-  maxEnemyNum: 20
-  waveEnemyNum: 3
-  waveSpawnInterval: 10
-  singleSpawnInterval: 3
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 0
-  burstEnemyNum: 3
-  burstSpawnInterval: 0.1
---- !u!4 &2132333868
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2132333866}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1120992881}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

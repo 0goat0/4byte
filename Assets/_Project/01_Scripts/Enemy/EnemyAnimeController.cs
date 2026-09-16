@@ -20,6 +20,10 @@ public class EnemyAnimeController : MonoBehaviour
     {
         animator.SetBool(IsChasing, state == EnemyStateType.Chase);
         animator.SetBool(IsAttacking, state == EnemyStateType.Attack);
+        if (state == EnemyStateType.Dead)
+        {
+            PlayDie();
+        }
     }
 
     public void PlaySpawn() => animator.SetTrigger(SpawnTrigger);

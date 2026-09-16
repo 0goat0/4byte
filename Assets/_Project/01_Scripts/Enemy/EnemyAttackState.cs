@@ -30,8 +30,8 @@ public class EnemyAttackState : IEnemyState
         }
         //공격시작
         Vector3 targetPos = enemy.Target.transform.position;
-        float distance = Vector3.Distance(enemy.transform.position, targetPos);
-
+        //float distance = Vector3.Distance(enemy.transform.position, targetPos);
+        float distance = DistanceUtil.GetDistanceToTarget(enemy.transform.position, enemy.Target);
         //타겟이 공격 범위 밖으로 나가면 다시 추격
         if (distance > enemy.AttackRange + AttackExitBuffer)
         {

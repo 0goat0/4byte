@@ -14,6 +14,7 @@ public class EnemyDeadState : IEnemyState
         //타겟을 비워줌.
         enemy.Target = null;
 
+        enemy.Animator.SetState(EnemyStateType.Dead);
 
         if (enemy.HasStateAuthority)
         {

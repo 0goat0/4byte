@@ -1,4 +1,4 @@
-using Fusion;
+﻿using Fusion;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
@@ -363,23 +363,7 @@ public class FusionConnection : MonoBehaviour, INetworkRunnerCallbacks
     }
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        //NetworkInputData inputData = new NetworkInputData();
 
-        //// test 입력 감지
-        //float horizontal = 0f;
-        //float vertical = 0f;
-
-        //if (Keyboard.current != null)
-        //{
-        //    // 수직 입력
-        //    if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) vertical += 1f;
-        //    if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) vertical -= 1f;
-        //}
-
-        //inputData.movementInput = new Vector3(horizontal, 0, vertical);
-
-        //// Fusion으로
-        //input.Set(inputData);
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
     {

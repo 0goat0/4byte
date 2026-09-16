@@ -186,9 +186,6 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
     private void OnStateTypeChanged()
     {
-        if (HasStateAuthority)
-            return;
-
         ApplyStateVisual(StateType);
     }
 
@@ -300,5 +297,15 @@ public class PlayerStats : NetworkBehaviour, IDamageable
             CurrentHp = 0f;
             ChangeState(PlayerStateType.Dead);
         }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, detectRange);
     }
 }

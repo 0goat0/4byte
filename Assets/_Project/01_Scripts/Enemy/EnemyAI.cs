@@ -152,13 +152,14 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     //각 상태의 Enter가 실행되는 구조.
     private void OnStateTypeChanged()
     {
-        //이미 호스트는 change에서 변경을 했으므로 생략
-        if (HasStateAuthority)
-        {
+        ApplyStateVisual(StateType);
+    }
+
+    private void ApplyStateVisual(EnemyStateType stateType)
+    {
             return;
-        }
-        currentState = stateDic[StateType];
-        currentState.Enter(this);
+
+        Animator.SetState(stateType);
     }
 
     public void TakeDamage(float damage, NetworkObject attacker)

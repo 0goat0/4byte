@@ -24,6 +24,8 @@ public class EnemyAnimeController : MonoBehaviour
         {
             PlayDie();
         }
+        else if (state == EnemyStateType.Idle)
+            PlaySpawn();
     }
 
     public void PlaySpawn() => animator.SetTrigger(SpawnTrigger);

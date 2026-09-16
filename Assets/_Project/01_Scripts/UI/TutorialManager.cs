@@ -18,7 +18,7 @@ public class TutorialManager : MonoBehaviour
     public List<string> startTexts;
 
     [Header("Scene Settings")]
-    public string nextSceneName = "MainMenu";
+    public string nextSceneName = "MainMenuScene";
 
     private int currentTextIndex = 0;
     private bool isStartTutorialOver = false;
@@ -84,9 +84,9 @@ public class TutorialManager : MonoBehaviour
         if (!isStartTutorialOver) return;
 
         tutorialCanvas.SetActive(true);
-        tutorialText.text = "Boss Die";
+        tutorialText.text = "Congratulations! You have completed the tutorial by defeating the boss";
 
-        nextButton.gameObject.SetActive(false);
+        nextButton.gameObject.SetActive(false);// 종료버튼 활성화
         Invoke("ExitTutorial", 2.0f);
     }
 

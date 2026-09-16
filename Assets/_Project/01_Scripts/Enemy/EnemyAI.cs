@@ -157,6 +157,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable
 
     private void ApplyStateVisual(EnemyStateType stateType)
     {
+        if (Animator == null)
             return;
 
         Animator.SetState(stateType);

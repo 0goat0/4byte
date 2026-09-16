@@ -19,7 +19,7 @@ public class MainMenuManager : MonoBehaviour
     }
     public void SinglePlay() => SceneManager.LoadScene("SingleGame");
     public void MultiPlay() => SceneManager.LoadScene("MultiGame");
-    public void TutorialPlay() => SceneManager.LoadScene("TutorialScene_ArtSource");
+    public void TutorialPlay() => SceneManager.LoadScene("TutorialScene_Play");
 
     public void Close()
     {

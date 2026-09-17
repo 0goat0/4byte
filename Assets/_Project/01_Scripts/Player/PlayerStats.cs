@@ -33,6 +33,8 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     public NetworkString<_32> playerName { get; set; }
     [SerializeField] private TextMeshPro playerNameLabel;
 
+    private TextMeshProUGUI uiNameLabel;
+
 
     [Header("Detection")]
     public float AttackRange { get { return attackRange; } }
@@ -154,12 +156,30 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     {
         if (string.IsNullOrEmpty(nameToDisplay) || nameToDisplay == "null")
         {
-            nameToDisplay = "Connecting...";
+            nameToDisplay = "Connectinggg...";
         }
 
         if (playerNameLabel != null)
         {
             playerNameLabel.text = nameToDisplay;
+        }
+
+        if (uiNameLabel == null)
+        {
+            GameObject mainCanvas = GameObject.Find("Main Canvers");
+            if (mainCanvas != null)
+            {
+                Transform targetTransform = mainCanvas.transform.Find("In Game UI/PlayerTeam/UI Player Name");
+
+                if (targetTransform != null)
+                {
+                    uiNameLabel = targetTransform.GetComponent<TextMeshProUGUI>();
+                }
+            }
+        }
+        if (uiNameLabel != null)
+        {
+            uiNameLabel.text = nameToDisplay;
         }
     }
     #endregion

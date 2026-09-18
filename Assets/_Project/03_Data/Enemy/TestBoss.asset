@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f088903508f98a742933cfdc9b1b3016, type: 3}
+  m_Name: TestBoss
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: TestBoss
+  size: 0
+  attackType: 0
+  hp: 500
+  attack: 30
+  defense: 10
+  attackSpeed: 10
+  moveSpeed: 10
+  goldDrop: 10
+  Prefab: {fileID: 5658868517289352571, guid: 2b35ecac3fbf1434793de9445e4a8b80, type: 3}

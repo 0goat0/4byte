@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4487655963291679951}
   - component: {fileID: -249827987418077231}
   - component: {fileID: 1348467243431122517}
+  - component: {fileID: 628712285137846822}
   m_Layer: 0
   m_Name: Enemy Building 1
   m_TagString: Untagged
@@ -52,10 +53,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 6896496255936228643, guid: 12324ad8a254bc74ab715035f3df6982, type: 3}
+  maxHp: 100
+  _IsDestroyed:
+    _value: 0
   minSpawnRadius: 15
   maxSpawnRadius: 30
   checkRadius: 0
-  enemyNum: 5
+  maxEnemyNum: 0
+  waveEnemyNum: 0
   waveSpawnInterval: 20
   singleSpawnInterval: 1
   obstacleMask:
@@ -82,6 +87,27 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: -249827987418077231}
   ForceRemoteRenderTimeframe: 0
+--- !u!135 &628712285137846822
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2439211918883189755}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 14
+  m_Center: {x: 0, y: 1.4, z: 0}
 --- !u!1001 &3124348088200687725
 PrefabInstance:
   m_ObjectHideFlags: 0

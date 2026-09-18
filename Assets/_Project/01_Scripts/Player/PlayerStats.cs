@@ -29,9 +29,9 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //몬스터 프리펩
     [SerializeField] private PlayerData data;
 
-    [Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
-    public NetworkString<_32> playerName { get; set; }
-    [SerializeField] private TextMeshPro playerNameLabel;
+    //[Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
+    //public NetworkString<_32> playerName { get; set; }
+    //[SerializeField] private TextMeshPro playerNameLabel;
 
     private TextMeshProUGUI uiNameLabel;
 
@@ -118,19 +118,21 @@ public class PlayerStats : NetworkBehaviour, IDamageable
         }
 
         #region Name
-        if (Object.HasInputAuthority)
-        {
-            if (FusionConnection.instance != null && !string.IsNullOrEmpty(FusionConnection.instance._playerName))
-            {
-                string localName = FusionConnection.instance._playerName;
-                UpdateNameUI(localName);
-                RpcSetPlayerName(localName);
-            }
-        }
-        else
-        {
-            UpdateNameUI(string.IsNullOrEmpty(playerName.Value) ? "Connecting..." : playerName.Value);
-        }
+        //if (Object.HasInputAuthority)
+        //{
+        //    if (FusionConnection.instance != null && !string.IsNullOrEmpty(FusionConnection.instance._playerName))
+        //    {
+        //        string localName = FusionConnection.instance._playerName;
+
+        //        UpdateNameUI(localName);
+        //        RpcSetPlayerName(localName);
+        //    }
+        //}
+        //else
+        //{
+        //    string currentNetName = playerName.ToString();
+        //    UpdateNameUI(string.IsNullOrEmpty(currentNetName) ? "Connecting..." : currentNetName);
+        //}
         #endregion
     }
 
@@ -143,45 +145,50 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     }
 
     #region Name
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    private void RpcSetPlayerName(string nameInput, RpcInfo info = default)
-    {
-        playerName = nameInput;
-    }
-    private void OnPlayerNameChanged()
-    {
-        UpdateNameUI(playerName.Value);
-    }
-    private void UpdateNameUI(string nameToDisplay)
-    {
-        if (string.IsNullOrEmpty(nameToDisplay) || nameToDisplay == "null")
-        {
-            nameToDisplay = "Connectinggg...";
-        }
+    //[Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    //private void RpcSetPlayerName(string nameInput, RpcInfo info = default)
+    //{
+    //    playerName = nameInput;
+    //}
+    //private void OnPlayerNameChanged()
+    //{
+    //    if(Object.HasInputAuthority)
+    //    {
+    //        return;
+    //    }
 
-        if (playerNameLabel != null)
-        {
-            playerNameLabel.text = nameToDisplay;
-        }
+    //    UpdateNameUI(playerName.ToString());
+    //}
+    //private void UpdateNameUI(string nameToDisplay)
+    //{
+    //    if (string.IsNullOrEmpty(nameToDisplay) || nameToDisplay == "null")
+    //    {
+    //        nameToDisplay = "Connectinggg...";
+    //    }
 
-        if (uiNameLabel == null)
-        {
-            GameObject mainCanvas = GameObject.Find("Main Canvers");
-            if (mainCanvas != null)
-            {
-                Transform targetTransform = mainCanvas.transform.Find("In Game UI/PlayerTeam/UI Player Name");
+    //    if (playerNameLabel != null)
+    //    {
+    //        playerNameLabel.text = nameToDisplay;
+    //    }
 
-                if (targetTransform != null)
-                {
-                    uiNameLabel = targetTransform.GetComponent<TextMeshProUGUI>();
-                }
-            }
-        }
-        if (uiNameLabel != null)
-        {
-            uiNameLabel.text = nameToDisplay;
-        }
-    }
+    //    if (uiNameLabel == null)
+    //    {
+    //        GameObject mainCanvas = GameObject.Find("Main Canvars");
+    //        if (mainCanvas != null)
+    //        {
+    //            Transform targetTransform = mainCanvas.transform.Find("In Game UI/PlayerTeam/UI Player Name");
+
+    //            if (targetTransform != null)
+    //            {
+    //                uiNameLabel = targetTransform.GetComponent<TextMeshProUGUI>();
+    //            }
+    //        }
+    //    }
+    //    if (uiNameLabel != null)
+    //    {
+    //        uiNameLabel.text = nameToDisplay;
+    //    }
+    //}
     #endregion
 
     public void ChangeState(PlayerStateType stateType)

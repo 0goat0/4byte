@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -249827987418077231}
   - component: {fileID: 1348467243431122517}
   - component: {fileID: 628712285137846822}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy Building 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Egg_Prehistoric_Open (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1020730797774398, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4030352071749730, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
       propertyPath: m_LocalScale.x
       value: 8
@@ -197,6 +201,10 @@ PrefabInstance:
     - target: {fileID: 1020730797774398, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
       propertyPath: m_Name
       value: Egg_Prehistoric_Open (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1020730797774398, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4030352071749730, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
       propertyPath: m_LocalScale.x
@@ -276,6 +284,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Egg_Prehistoric_Open
       objectReference: {fileID: 0}
+    - target: {fileID: 1020730797774398, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 4030352071749730, guid: ef3018d34df76462380e1551a5fca9da, type: 3}
       propertyPath: m_LocalScale.x
       value: 8
@@ -353,6 +365,10 @@ PrefabInstance:
     - target: {fileID: 1921012682916238, guid: acbba44ba06dd4a0b8c736731541ee67, type: 3}
       propertyPath: m_Name
       value: Egg_Nest_Prehistoric
+      objectReference: {fileID: 0}
+    - target: {fileID: 1921012682916238, guid: acbba44ba06dd4a0b8c736731541ee67, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4142855762402242, guid: acbba44ba06dd4a0b8c736731541ee67, type: 3}
       propertyPath: m_LocalScale.x
@@ -488,6 +504,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Crater_Water
       objectReference: {fileID: 0}
+    - target: {fileID: 4210515476280191782, guid: d383ad2fcfb4f744b8dffa58a3340758, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -509,6 +529,10 @@ PrefabInstance:
     - target: {fileID: 4990961415517175137, guid: 9f6e16badfbb4d944892deedf6f28ff8, type: 3}
       propertyPath: m_Name
       value: Scifi_Skull_Alien
+      objectReference: {fileID: 0}
+    - target: {fileID: 4990961415517175137, guid: 9f6e16badfbb4d944892deedf6f28ff8, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5622924842453215195, guid: 9f6e16badfbb4d944892deedf6f28ff8, type: 3}
       propertyPath: m_LocalScale.x

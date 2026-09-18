@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   data: {fileID: 11400000, guid: b20201131e652c04bb29028de57d75f4, type: 2}
-  attackRange: 5
+  attackRange: 0
   detectRange: 10
   targetLayerMask:
     serializedVersion: 2
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossBasicAttackPattern
   minRange: 0
-  maxRange: 3
+  maxRange: 6
   cooldown: 2
   damageMultiplier: 1
   animationDuration: 0.6

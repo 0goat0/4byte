@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5320722418153993185}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Engineering Bay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,6 +86,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Scifi_Planet_Base_Greenhouse
       objectReference: {fileID: 0}
+    - target: {fileID: 7794737330395120631, guid: a5b956ba9912cc549893c328125c8980, type: 3}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -151,6 +155,10 @@ PrefabInstance:
     - target: {fileID: 3102785576809536379, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
       propertyPath: m_Name
       value: Scifi_Planet_Base_Generator_Big
+      objectReference: {fileID: 0}
+    - target: {fileID: 3102785576809536379, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 3463183978282859182, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
       propertyPath: m_SelectedEditorRenderState
@@ -16205,6 +16213,10 @@ PrefabInstance:
     - target: {fileID: 595223683079008340, guid: 5dba6ebe777bf8c46a86deb1afc60a85, type: 3}
       propertyPath: m_Name
       value: Scifi_Planet_Base_Hall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 595223683079008340, guid: 5dba6ebe777bf8c46a86deb1afc60a85, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 1387764788888424833, guid: 5dba6ebe777bf8c46a86deb1afc60a85, type: 3}
       propertyPath: m_SelectedEditorRenderState

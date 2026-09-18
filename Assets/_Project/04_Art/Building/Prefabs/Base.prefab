@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 576009237473476150}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,6 +95,10 @@ PrefabInstance:
     - target: {fileID: 3011215499949183999, guid: c0dc54531934d4d43bce9b05695dd52b, type: 3}
       propertyPath: m_Name
       value: Scifi_Planet_Base_Connector_Tri
+      objectReference: {fileID: 0}
+    - target: {fileID: 3011215499949183999, guid: c0dc54531934d4d43bce9b05695dd52b, type: 3}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

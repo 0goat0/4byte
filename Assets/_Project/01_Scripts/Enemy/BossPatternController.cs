@@ -94,7 +94,7 @@ public class BossPatternController : NetworkBehaviour
 
             if (currentPattern.IsFinished(owner))
             {
-                EndCurrentPattern();
+                EndCurrentPattern(owner);
             }
             return;
         }
@@ -162,9 +162,9 @@ public class BossPatternController : NetworkBehaviour
         pattern.Enter(owner);
     }
 
-    private void EndCurrentPattern()
+    private void EndCurrentPattern(EnemyAI owner)
     {
-        currentPattern?.Exit(enemy);
+        currentPattern?.Exit(owner);
         currentPattern = null;
         CurrentPatternIndex = -1;
     }

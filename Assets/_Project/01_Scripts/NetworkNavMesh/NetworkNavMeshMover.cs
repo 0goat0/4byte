@@ -31,6 +31,8 @@ public class NetworkNavMeshMover : NetworkBehaviour
 
     public override void Spawned()
     {
+        _agent.updatePosition = false;
+
         // 이동은 StateAuthority 만 계산하고,
         // 클라이언트는 NetworkTransform으로 결과값만 전달받음
         _agent.enabled = Object.HasStateAuthority;
@@ -38,6 +40,11 @@ public class NetworkNavMeshMover : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
+        if (!Object.HasStateAuthority || !_hasActiveDestination)
+            return;
+
+        _transform.position = _agent.nextPosition;
+
         if (!HasReachedDestination())
             return;
         

@@ -6,16 +6,13 @@ using UnityEngine.UI;
 
 public class NameEntry : MonoBehaviour
 {
-    public static NameEntry instance;
     private Animator animator;
     [SerializeField] TMP_InputField nameInputField;
     [SerializeField] Button submitButton;
 
     private void Awake()
     {
-        if (instance == null) instance = this;
-
-        animator = GetComponent<Animator>();
+            animator = GetComponent<Animator>();
     }
 
     public void SubmitName()
@@ -25,15 +22,14 @@ public class NameEntry : MonoBehaviour
         // 닉네임이 비어있지 않으면 로비 연결
         if (!string.IsNullOrEmpty(enteredName))
         {
-            if (FusionConnection.instance != null)
+            if (LobbyConnection.Instance != null)
             {
-                FusionConnection.instance.ConnectedToLobby(enteredName);
+                LobbyConnection.Instance.ConnectedToLobby(enteredName);
             }
             gameObject.SetActive(false);
         }
         else
         {
-            MainMenuManager.instance.MultiPlay();
             gameObject.SetActive(true);
             Debug.LogWarning("닉네임을 입력해주세요");
         }

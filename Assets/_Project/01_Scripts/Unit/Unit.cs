@@ -20,7 +20,6 @@ public class Unit : NetworkBehaviour, ISelectable
 
     public override void Spawned()
     {
-        // 입력 권한을 가진 클라이언트의 이름을 유닛 이름으로 설정
         if (Object.HasInputAuthority)
         {
             if (FusionConnection.instance != null && !string.IsNullOrEmpty(FusionConnection.instance._playerName))

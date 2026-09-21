@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5320722418153993185}
-  - component: {fileID: 4983558498595138441}
   - component: {fileID: 8412184981119447981}
-  - component: {fileID: -3250536441219810050}
+  - component: {fileID: 3668657032175202895}
+  - component: {fileID: -1892636299954665571}
   m_Layer: 9
   m_Name: Engineering Bay
   m_TagString: Untagged
@@ -37,19 +37,6 @@ Transform:
   - {fileID: 7052197592050774322}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4983558498595138441
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6236671811418797648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c16858f75849e945ac7a078bc6b4b80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EngineeringBay
-  labData: {fileID: 11400000, guid: 14534d9e1a249444e9f0815967103ce6, type: 2}
 --- !u!114 &8412184981119447981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,9 +54,30 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: -3250536441219810050}
+  - {fileID: -1892636299954665571}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &-3250536441219810050
+--- !u!65 &3668657032175202895
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6236671811418797648}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.831627, y: 7.155619, z: 31.276682}
+  m_Center: {x: 0.31112665, y: 3.07781, z: 4.8307843}
+--- !u!114 &-1892636299954665571
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,25 +86,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 6236671811418797648}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3fcf0cdd1344564428e650f4f760041a, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c16858f75849e945ac7a078bc6b4b80, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  data: {fileID: 0}
-  attackRange: 0
-  detectRange: 0
-  attackInterval: 0
-  _attackDamage: 0
-  _defense: 0
-  _attackSpeed: 0
-  _MoveSpeed: 0
-  targetLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  _StateType: 0
+  m_EditorClassIdentifier: Assembly-CSharp::EngineeringBay
+  buildingData: {fileID: 11400000, guid: 14534d9e1a249444e9f0815967103ce6, type: 2}
   _CurrentHp: 1000
-  _Target: {fileID: 8412184981119447981}
-  DespawnDelay: 2
-  _CommandDestination: {x: 0, y: 0, z: 0}
+  _IsDestroyed: 0
 --- !u!1001 &484656726903154815
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -213,6 +208,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2325158844776333761, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2868272735056635433, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2868272735056635433, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2868272735056635433, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}
+      propertyPath: m_ProvidesContacts
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3102785576809536379, guid: a7c3d899c4b351b46bc1239bacfd99fa, type: 3}

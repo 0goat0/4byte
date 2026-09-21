@@ -9,6 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 576009237473476150}
+  - component: {fileID: -6007312297534105424}
+  - component: {fileID: 1595916194598400621}
+  - component: {fileID: 4506780557451237847}
   m_Layer: 9
   m_Name: Base
   m_TagString: Untagged
@@ -32,6 +35,61 @@ Transform:
   - {fileID: 3216981962162982627}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-6007312297534105424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3276872719212335513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 1540965277
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 4506780557451237847}
+  ForceRemoteRenderTimeframe: 0
+--- !u!65 &1595916194598400621
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3276872719212335513}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 14.109913, y: 9.620334, z: 14.110458}
+  m_Center: {x: 0.0654366, y: 4.5473733, z: -0.45411396}
+--- !u!114 &4506780557451237847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3276872719212335513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136bb91d5139541499e9fcbc0bb565d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Base
+  buildingData: {fileID: 11400000, guid: 5665c1366ec97394293d8cac3c1e2f22, type: 2}
+  _CurrentHp: 1000
+  _IsDestroyed: 0
 --- !u!1001 &1019828007075776422
 PrefabInstance:
   m_ObjectHideFlags: 0

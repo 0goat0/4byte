@@ -254,16 +254,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   data: {fileID: 11400000, guid: 5ca17c1ac99f4a608c2199d65c3e1211, type: 2}
-  _playerName:
-    _length: 0
-    _data:
-      Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  playerNameLabel: {fileID: 0}
   attackRange: 10
   detectRange: 15
   attackInterval: 1
   _attackDamage: 0
-  _defense: 0
+  _defense: 1
   _attackSpeed: 0
   _MoveSpeed: 0
   targetLayerMask:

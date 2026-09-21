@@ -17,7 +17,7 @@ MonoBehaviour:
   attackType: 1
   hp: 100
   attack: 10
-  defense: 0
+  defense: 1
   attackSpeed: 1
   moveSpeed: 3
   Prefab: {fileID: 4852226525124888101, guid: 77f87eac40d36614a9f1fe44490c529e, type: 3}

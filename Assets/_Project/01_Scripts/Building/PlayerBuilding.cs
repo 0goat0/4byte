@@ -1,8 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
-using WebSocketSharp;
 
-public class PlayerBuilding : NetworkBehaviour, ISelectable
+public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable
 {
     [SerializeField] protected BuildingData buildingData;
     public BuildingData Data => buildingData;
@@ -12,21 +11,23 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable
 
     public override void Spawned()
     {
-        if (Object.HasStateAuthority && buildingData != null)
+        if (HasStateAuthority && buildingData != null)
         {
             CurrentHp = buildingData.hp;
             IsDestroyed = false;
         }
     }
-
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, NetworkObject attacker)
     {
         if (!HasStateAuthority || IsDestroyed) return;
 
         int finalDamage = Mathf.Max((int)damage - buildingData.defense, 1);
         CurrentHp = Mathf.Clamp(CurrentHp - finalDamage, 0, buildingData.hp);
 
-        if (CurrentHp <= 0) DestroyBuilding();
+        if (CurrentHp <= 0)
+        {
+            DestroyBuilding();
+        }
     }
 
     private void DestroyBuilding()
@@ -34,8 +35,4 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable
         IsDestroyed = true;
         Runner.Despawn(Object);
     }
-
-
-
-
 }

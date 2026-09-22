@@ -15,6 +15,6 @@ MonoBehaviour:
   buildingName: Base
   hp: 1000
   attackDamage: 0
-  defense: 10
+  defense: 0
   attackSpeed: 0
   Prefab: {fileID: 3276872719212335513, guid: bb005cf58622b08419aa1b031ff00a09, type: 3}

@@ -25,6 +25,9 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
     [SerializeField] private float telegraphDuration; // 예고 시간 (이때 이펙트/애니메이션 재생)
     [SerializeField] private float recoveryDuration;  // 타격 후 경직
 
+    [Header("예고 연출")]
+    [SerializeField] private GameObject telegraphVisual;
+
     public string PatternId => "BossSwingAttack";
    
     private float elapsed;
@@ -41,10 +44,9 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
         damageApplied = false;
 
         enemy.Mover?.Stop();
+        enemy.FaceTargetInstant(enemy.Target.transform.position);
+        enemy.Animator.PlaySpinAttackStart();
         Debug.Log("[Boss] 휘두르기 예고");
-
-        // TODO: 여기서 예고 이펙트/애니메이션 트리거를 재생.
-        // 클라이언트 연출까지 동기화하려면 BossPatternController.OnPatternIndexChanged에서 처리.
     }
 
     public void Tick(EnemyAI enemy)
@@ -53,6 +55,7 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
         if (!damageApplied && elapsed >= telegraphDuration)
         {
+            enemy.Animator.PlaySpinAttack();
             damageApplied = true;
             ApplySwingDamage(enemy);
         }
@@ -65,13 +68,15 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
     public void Exit(EnemyAI enemy)
     {
+        enemy.Animator.StopSpinAttack();
     }
 
     private void ApplySwingDamage(EnemyAI enemy)
     {
+       
         LayerMask mask = targetLayerMask.value != 0 ? targetLayerMask : enemy.TargetLayerMask;
         Collider[] hits = Physics.OverlapSphere(enemy.transform.position, swingRadius, mask);
-
+        Debug.Log($"[Swing] hits.Length = {hits.Length}");
         foreach (var hit in hits)
         {
             IDamageable damageable = hit.GetComponent<IDamageable>();
@@ -80,6 +85,20 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
                 damageable.TakeDamage(enemy.Data.attack * damageMultiplier, enemy.Object);
             }
         }
+    }
+    public void ShowTelegraph(EnemyAI enemy)
+    {
+        if (telegraphVisual == null) return;
+
+        telegraphVisual.SetActive(true);
+        // 데칼/링 메시가 반지름 1 기준으로 만들어졌다면 swingRadius에 맞춰 스케일
+        telegraphVisual.transform.localScale = new Vector3(swingRadius * 2f, telegraphVisual.transform.localScale.y, swingRadius * 2f);
+    }
+
+    public void HideTelegraph(EnemyAI enemy)
+    {
+        if (telegraphVisual == null) return;
+        telegraphVisual.SetActive(false);
     }
 
     private void OnDrawGizmosSelected()

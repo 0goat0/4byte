@@ -64,6 +64,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8845172976557269508, guid: 9e40001e29a94ae38512dff866abad94, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: d0f27a8cbdb033b488344b021229de11, type: 2}
     m_RemovedComponents:
     - {fileID: 4114784068182583798, guid: 9e40001e29a94ae38512dff866abad94, type: 3}
     - {fileID: 4381212124017099007, guid: 9e40001e29a94ae38512dff866abad94, type: 3}
@@ -254,11 +258,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   data: {fileID: 11400000, guid: 5ca17c1ac99f4a608c2199d65c3e1211, type: 2}
-  _playerName:
-    _length: 0
-    _data:
-      Data: 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-  playerNameLabel: {fileID: 0}
   attackRange: 10
   detectRange: 15
   attackInterval: 1
@@ -299,4 +298,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c70143f5dfb34541bd070694338150a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimeController
-  animator: {fileID: 0}

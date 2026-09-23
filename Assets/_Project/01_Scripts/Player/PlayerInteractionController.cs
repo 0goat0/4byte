@@ -5,6 +5,7 @@ public class PlayerInteractionController : MonoBehaviour
 {
     [SerializeField] private RTSInputReader inputReader;
     [SerializeField] private PlayerInteractionState playerState;
+    [SerializeField] private ParticleSystem commandIndicatorEffect;
 
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _enemyMask;
@@ -89,6 +90,8 @@ public class PlayerInteractionController : MonoBehaviour
 
         Vector3 destination = hitInfo.point;
 
+        ShowCommandIndicator(destination);
+
         playerState.CommandParty.RequestMove(destination);
     }
 
@@ -132,5 +135,19 @@ public class PlayerInteractionController : MonoBehaviour
 
         // 선택 대상은 유지하고 다음 클릭의 입력 모드만 복귀합니다.
         playerState.CancelPendingCommand();
+    }
+
+    private void ShowCommandIndicator(Vector3 position)
+    {
+        if (commandIndicatorEffect == null)
+            return;
+
+        Transform effectTransform = commandIndicatorEffect.transform;
+
+        effectTransform.position = position + Vector3.up * 0.03f;
+
+        commandIndicatorEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        commandIndicatorEffect.Play(true);
     }
 }

@@ -11,7 +11,7 @@ public class EnemyAttackState : IEnemyState
     {
         enemy.Mover?.Stop();
         Debug.Log("공격시작");
-        enemy.Animator.SetState(EnemyStateType.Attack);
+        //enemy.Animator.SetState(EnemyStateType.Attack);
 
         patternController = enemy.GetComponent<BossPatternController>();
     }
@@ -57,6 +57,7 @@ public class EnemyAttackState : IEnemyState
         {
             Debug.Log("공격중");
             enemy.AttackCooldown = TickTimer.CreateFromSeconds(enemy.Runner, enemy.AttackInterval);
+            enemy.Animator.PlayAttack();
             IDamageable damageable = enemy.Target.GetComponent<IDamageable>();
             if (damageable != null)
             {

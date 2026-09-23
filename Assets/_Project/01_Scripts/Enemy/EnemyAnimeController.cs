@@ -6,6 +6,7 @@ public class EnemyAnimeController : MonoBehaviour
 
     private static readonly int IsChasing = Animator.StringToHash("IsChase");
     private static readonly int IsAttacking = Animator.StringToHash("IsAttack");
+    private static readonly int AttackTrigger = Animator.StringToHash("Attack");
     private static readonly int SpawnTrigger = Animator.StringToHash("Spawn");
     private static readonly int HitTrigger = Animator.StringToHash("Hit");
     private static readonly int DieTrigger = Animator.StringToHash("Die");
@@ -25,7 +26,7 @@ public class EnemyAnimeController : MonoBehaviour
     public void SetState(EnemyStateType state)
     {
         animator.SetBool(IsChasing, state == EnemyStateType.Chase);
-        animator.SetBool(IsAttacking, state == EnemyStateType.Attack);
+        //animator.SetBool(IsAttacking, state == EnemyStateType.Attack);
         if (state == EnemyStateType.Dead)
         {
             PlayDie();
@@ -41,7 +42,7 @@ public class EnemyAnimeController : MonoBehaviour
     public void PlayIdle() => animator.SetTrigger(IdleTrigger);
     public void PlayHit() => animator.SetTrigger(HitTrigger);
     public void PlayDie() => animator.SetTrigger(DieTrigger);
-
+    public void PlayAttack() => animator.SetTrigger(AttackTrigger);
 
 
     //boss

@@ -28,6 +28,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //드랍골드
     //몬스터 프리펩
     [SerializeField] private PlayerData data;
+    public PlayerData Data => data;
 
     //[Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
     //public NetworkString<_32> playerName { get; set; }
@@ -225,11 +226,21 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     }
 
     //스텟 업글
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RpcUpdataStats(float addDamage, float addDefense)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RpcUpgradeStats(bool isAttack)
     {
-        attackDamage += addDamage;
-        defense += addDefense;
+        if (!HasStateAuthority || data == null) return;
+
+        if (isAttack)
+        {
+            this.attackDamage += 1f;
+        }
+        else
+        {
+            this.defense += 1f;
+        }
+
+        Debug.Log($"[서버] {gameObject.name} 스탯 강화 완료! 현재 공격력: {this.attackDamage}, 방어력: {this.defense}");
     }
     public void CommandMove(Vector3 destination)
     {

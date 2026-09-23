@@ -61,10 +61,9 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     [Networked] public TickTimer DeathTimer { get; set; }
     public float DespawnDelay = 2f;
 
-    //public NavMeshAgent agent;
     public EnemyAnimeController Animator { get; set; }
     public NetworkNavMeshMover Mover { get; set; }
-
+    private NetworkTransform networkTransform;
     public bool IsAlive => StateType != EnemyStateType.Dead;
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
@@ -72,9 +71,9 @@ public class EnemyAI : NetworkBehaviour, IDamageable
 
     private void Awake()
     {
-        //agent = GetComponent<NavMeshAgent>();
         Mover = GetComponent<NetworkNavMeshMover>();
         Animator = GetComponentInChildren<EnemyAnimeController>();
+        networkTransform = GetComponent<NetworkTransform>();
     }
 
     public override void Spawned()
@@ -183,6 +182,10 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
         }
+        else
+        {
+            //Animator.PlayHit();
+        }
     }
 
     private void ResetLocalVisualState()
@@ -190,6 +193,41 @@ public class EnemyAI : NetworkBehaviour, IDamageable
         Animator.SetState(EnemyStateType.Idle); 
         // IsChase/IsAttack 둘 다 false로
         // 콜라이더를 죽을 때 껐다면 여기서 다시 켜주는 처리 등을 추가
+    }
+
+
+    public void FaceTarget(Vector3 targetPosition, float rotationSpeed = 720f)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        Vector3 direction = targetPosition - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Runner.DeltaTime);
+    }
+
+    // 즉시 스냅 회전이 필요할 때 (패턴 Enter 시점 등)
+    public void FaceTargetInstant(Vector3 targetPosition)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        Vector3 direction = targetPosition - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = targetRotation;
+
+        // MoveTo()에서 쓰는 것과 같은 방식: 즉시 스냅되도록 Teleport로 회전값 전파
+        networkTransform.Teleport(rotation: targetRotation);
     }
 
     private void OnDrawGizmosSelected()

@@ -69,11 +69,15 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
 
+    [Networked] public int DestinationIndex { get; set; }
+    private NavMeshAgent navMeshAgent; // NetworkNavMeshMover와 별개로 참조만 가져옴
+
     private void Awake()
     {
         Mover = GetComponent<NetworkNavMeshMover>();
         Animator = GetComponentInChildren<EnemyAnimeController>();
         networkTransform = GetComponent<NetworkTransform>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
     public override void Spawned()
@@ -97,10 +101,16 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             StateType = EnemyStateType.Idle;
             Target = null;
             IsAlerted = false;
+            DestinationIndex = 0;
             AttackCooldown = TickTimer.None;
             DetectTimer = TickTimer.None;
             DeathTimer = TickTimer.None;
             Animator.PlaySpawn();
+        }
+        // 우선순위를 유닛마다 다르게 (0~99 범위, 낮을수록 우선순위 높음)
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.avoidancePriority = (int)(Object.Id.Raw % 100);
         }
         //else
         //{

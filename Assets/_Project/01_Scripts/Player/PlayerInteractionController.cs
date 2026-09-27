@@ -5,7 +5,11 @@ public class PlayerInteractionController : MonoBehaviour
 {
     [SerializeField] private RTSInputReader inputReader;
     [SerializeField] private PlayerInteractionState playerState;
+
+    [Header("Command Indicator")]
     [SerializeField] private ParticleSystem commandIndicatorEffect;
+    [SerializeField] private Color moveIndicatorColor = Color.green;
+    [SerializeField] private Color attackMoveIndicatorColor = Color.red;
 
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _enemyMask;
@@ -90,7 +94,7 @@ public class PlayerInteractionController : MonoBehaviour
 
         Vector3 destination = hitInfo.point;
 
-        ShowCommandIndicator(destination);
+        ShowCommandIndicator(destination, moveIndicatorColor);
 
         playerState.CommandParty.RequestMove(destination);
     }
@@ -125,8 +129,12 @@ public class PlayerInteractionController : MonoBehaviour
         }
         else if ((_groundMask.value & hitLayerMask) != 0)
         {
+            Vector3 destination = hitInfo.point;
+
+            ShowCommandIndicator(destination, attackMoveIndicatorColor);
+
             // 땅을 클릭한 경우 클릭한 곳의 월드 좌표
-            playerState.CommandParty.RequestAttackMove(hitInfo.point);
+            playerState.CommandParty.RequestAttackMove(destination);
         }
         else
         {
@@ -137,7 +145,7 @@ public class PlayerInteractionController : MonoBehaviour
         playerState.CancelPendingCommand();
     }
 
-    private void ShowCommandIndicator(Vector3 position)
+    private void ShowCommandIndicator(Vector3 position, Color color)
     {
         if (commandIndicatorEffect == null)
             return;
@@ -145,6 +153,9 @@ public class PlayerInteractionController : MonoBehaviour
         Transform effectTransform = commandIndicatorEffect.transform;
 
         effectTransform.position = position + Vector3.up * 0.03f;
+
+        ParticleSystem.MainModule main = commandIndicatorEffect.main;
+        main.startColor = color;
 
         commandIndicatorEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
 

@@ -124,6 +124,11 @@ public class PlayerInteractionController : MonoBehaviour
             if (target == null)
                 return;
 
+            if (target.TryGetComponent(out EnemyAI enemy))
+            {
+                enemy.PlayAttackTargetFeedback();
+            }
+
             // 적을 클릭 할 경우 타겟 적의 Transform
             playerState.CommandParty.RequestAttackTarget(target);
         }

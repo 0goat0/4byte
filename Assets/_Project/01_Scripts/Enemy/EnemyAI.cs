@@ -21,7 +21,7 @@ public enum EnemyStateType
     Attack,
     Dead
 }
-public class EnemyAI : NetworkBehaviour, IDamageable
+public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
 {
 
     [Header("Data")]
@@ -41,6 +41,15 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     public float AttackInterval { get { return attackInterval; } }
     [SerializeField] private float attackInterval;
     [SerializeField] private float alertedDetectMultiplier;
+
+    [Header("Selection")]
+    [SerializeField] private Renderer _selectionIndicatorRenderer;
+
+    private float AttackTargetFeedbackDuration = 0.4f;
+
+    private bool _isSelected;
+    private Coroutine _attackTargetFeedbackCoroutine;
+
     [Networked] public bool IsAlerted { get; set; }
     public LayerMask TargetLayerMask {  get { return targetLayerMask; }}
 
@@ -75,6 +84,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable
         //agent = GetComponent<NavMeshAgent>();
         Mover = GetComponent<NetworkNavMeshMover>();
         Animator = GetComponentInChildren<EnemyAnimeController>();
+        SetSelected(false);
     }
 
     public override void Spawned()
@@ -183,6 +193,40 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
         }
+    }
+
+    public void SetSelected(bool isSelected)
+    {
+        _isSelected = isSelected;
+
+        if (_selectionIndicatorRenderer == null)
+            return;
+
+        _selectionIndicatorRenderer.enabled = isSelected;
+    }
+
+    public void PlayAttackTargetFeedback()
+    {
+        if (_selectionIndicatorRenderer == null)
+            return;
+
+        if (_attackTargetFeedbackCoroutine != null)
+        {
+            StopCoroutine(_attackTargetFeedbackCoroutine);
+        }
+
+        _attackTargetFeedbackCoroutine = StartCoroutine(PlayAttackTargetFeedbackRoutine());
+    }
+
+    private IEnumerator PlayAttackTargetFeedbackRoutine()
+    {
+        _selectionIndicatorRenderer.enabled = true;
+
+        yield return new WaitForSeconds(
+            AttackTargetFeedbackDuration);
+
+        _selectionIndicatorRenderer.enabled = _isSelected;
+        _attackTargetFeedbackCoroutine = null;
     }
 
     private void ResetLocalVisualState()

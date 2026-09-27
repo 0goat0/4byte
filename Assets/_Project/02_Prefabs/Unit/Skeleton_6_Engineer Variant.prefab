@@ -359,7 +359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fcf0cdd1344564428e650f4f760041a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  data: {fileID: 11400000, guid: 5ca17c1ac99f4a608c2199d65c3e1211, type: 2}
+  data: {fileID: 11400000, guid: 55ab16304b47b0140ac8120153e4aed2, type: 2}
   attackRange: 10
   detectRange: 15
   attackInterval: 1

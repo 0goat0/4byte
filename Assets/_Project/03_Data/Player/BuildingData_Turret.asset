@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53f587e670116b741b0e78483d449da4, type: 3}
+  m_Name: BuildingData_Turret
+  m_EditorClassIdentifier: Assembly-CSharp::BuildingData
+  buildingName: Turret
+  hp: 500
+  attackDamage: 10
+  defense: 2
+  attackSpeed: 5
+  Prefab: {fileID: 7518709310776876423, guid: 13dabb090b7b97e40b93eb8d86b43d4d, type: 3}

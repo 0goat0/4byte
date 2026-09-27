@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8412184981119447981}
   - component: {fileID: 3668657032175202895}
   - component: {fileID: -1892636299954665571}
+  - component: {fileID: 4491570710374347099}
   m_Layer: 9
   m_Name: Engineering Bay
   m_TagString: Untagged
@@ -92,6 +93,18 @@ MonoBehaviour:
   buildingData: {fileID: 11400000, guid: 14534d9e1a249444e9f0815967103ce6, type: 2}
   _CurrentHp: 1000
   _IsDestroyed: 0
+--- !u!114 &4491570710374347099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6236671811418797648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 492be5a7d323a0843bbcd06b11ae30f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FogRevealer
 --- !u!1001 &484656726903154815
 PrefabInstance:
   m_ObjectHideFlags: 0

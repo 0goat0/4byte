@@ -112,10 +112,8 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
             ChangeState(PlayerStateType.Idle);
         }
-        else
-        {
-            ApplyStateVisual(StateType);
-        }
+
+        ApplyStateVisual(StateType);
 
         #region Name
         //if (Object.HasInputAuthority)
@@ -207,7 +205,6 @@ public class PlayerStats : NetworkBehaviour, IDamageable
         StateType = stateType;
         _currentState = nextState;
 
-        ApplyStateVisual(stateType);
         _currentState.Enter(this);
     }
 

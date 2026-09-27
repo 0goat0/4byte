@@ -6,6 +6,11 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private RTSInputReader inputReader;
     [SerializeField] private PlayerInteractionState playerState;
 
+    [Header("Command Indicator")]
+    [SerializeField] private ParticleSystem commandIndicatorEffect;
+    [SerializeField] private Color moveIndicatorColor = Color.green;
+    [SerializeField] private Color attackMoveIndicatorColor = Color.red;
+
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _enemyMask;
 
@@ -89,6 +94,8 @@ public class PlayerInteractionController : MonoBehaviour
 
         Vector3 destination = hitInfo.point;
 
+        ShowCommandIndicator(destination, moveIndicatorColor);
+
         playerState.CommandParty.RequestMove(destination);
     }
 
@@ -117,13 +124,22 @@ public class PlayerInteractionController : MonoBehaviour
             if (target == null)
                 return;
 
+            if (target.TryGetComponent(out EnemyAI enemy))
+            {
+                enemy.PlayAttackTargetFeedback();
+            }
+
             // 적을 클릭 할 경우 타겟 적의 Transform
             playerState.CommandParty.RequestAttackTarget(target);
         }
         else if ((_groundMask.value & hitLayerMask) != 0)
         {
+            Vector3 destination = hitInfo.point;
+
+            ShowCommandIndicator(destination, attackMoveIndicatorColor);
+
             // 땅을 클릭한 경우 클릭한 곳의 월드 좌표
-            playerState.CommandParty.RequestAttackMove(hitInfo.point);
+            playerState.CommandParty.RequestAttackMove(destination);
         }
         else
         {
@@ -132,5 +148,22 @@ public class PlayerInteractionController : MonoBehaviour
 
         // 선택 대상은 유지하고 다음 클릭의 입력 모드만 복귀합니다.
         playerState.CancelPendingCommand();
+    }
+
+    private void ShowCommandIndicator(Vector3 position, Color color)
+    {
+        if (commandIndicatorEffect == null)
+            return;
+
+        Transform effectTransform = commandIndicatorEffect.transform;
+
+        effectTransform.position = position + Vector3.up * 0.03f;
+
+        ParticleSystem.MainModule main = commandIndicatorEffect.main;
+        main.startColor = color;
+
+        commandIndicatorEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+        commandIndicatorEffect.Play(true);
     }
 }

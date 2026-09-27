@@ -20,6 +20,8 @@ public class PlayerStatsUI : MonoBehaviour
 
     private PlayerStats _trackedUnit;
     private PlayerData _cachedData;
+    private EnemyAI _trackedEnemy;
+    private EnemyData _cachedEnemyData;
     private EngineeringBay _currentLab;
 
     private void Start()
@@ -50,12 +52,20 @@ public class PlayerStatsUI : MonoBehaviour
 
     private void Update()
     {
-        // 실시간 체력 및 스탯 갱신 (유닛을 추적 중일 때만 실행)
+        // 선택된 플레이어 유닛 또는 적의 정보를 실시간으로 갱신
         if (_trackedUnit != null && _trackedUnit.Object != null && _trackedUnit.Object.IsValid)
         {
             UpdateUnitInfoUI();
+            return;
         }
-        else if (_trackedUnit != null)
+
+        if (_trackedEnemy != null && _trackedEnemy.Object != null && _trackedEnemy.Object.IsValid)
+        {
+            UpdateEnemyInfoUI();
+            return;
+        }
+
+        if (_trackedUnit != null || _trackedEnemy != null)
         {
             ClearUI();
         }
@@ -75,6 +85,8 @@ public class PlayerStatsUI : MonoBehaviour
             {
                 _trackedUnit = null;
                 _cachedData = null;
+                _trackedEnemy = null;
+                _cachedEnemyData = null;
                 _currentLab = selectedLab;
 
                 UpdateBuildingInfoUI();
@@ -86,6 +98,8 @@ public class PlayerStatsUI : MonoBehaviour
             PlayerStats selectedUnit = targetComponent.GetComponentInParent<PlayerStats>();
             if (selectedUnit != null)
             {
+                _trackedEnemy = null;
+                _cachedEnemyData = null;
                 _currentLab = null;
                 SetUpgradeButtonsActive(false); // 건물 전용 버튼 숨기기
 
@@ -103,6 +117,26 @@ public class PlayerStatsUI : MonoBehaviour
                     }
                 }
             }
+
+            // 적 유닛 확인
+            EnemyAI selectedEnemy = targetComponent.GetComponentInParent<EnemyAI>();
+            if (selectedEnemy != null)
+            {
+                _trackedUnit = null;
+                _cachedData = null;
+                _currentLab = null;
+
+                _trackedEnemy = selectedEnemy;
+                _cachedEnemyData = selectedEnemy.Data;
+
+                SetUpgradeButtonsActive(false);
+
+                if (_cachedEnemyData != null)
+                {
+                    UpdateEnemyInfoUI();
+                    return;
+                }
+            }
         }
 
         ClearUI();
@@ -112,6 +146,8 @@ public class PlayerStatsUI : MonoBehaviour
     {
         _trackedUnit = null;
         _cachedData = null;
+        _trackedEnemy = null;
+        _cachedEnemyData = null;
         _currentLab = null;
 
         if (unitInfoText != null)
@@ -147,6 +183,15 @@ public class PlayerStatsUI : MonoBehaviour
                              $"HP: {(int)_trackedUnit.CurrentHp} / {(int)_cachedData.hp}<pos=45%>Defense: {_trackedUnit.defense}\n\n" +
                              $"Attack: {_trackedUnit.attackDamage}<pos=45%>AttackSpeed: {_trackedUnit.attackSpeed}\n\n" +
                              $"MoveSpeed: {_trackedUnit.MoveSpeed}</line-height>";
+    }
+
+    private void UpdateEnemyInfoUI()
+    {
+        if (_trackedEnemy == null || _cachedEnemyData == null || unitInfoText == null)
+            return;
+
+        unitInfoText.text = $"<line-height=85%><size=150%><b>{_cachedEnemyData.enemyName}</b></size>\n\n" +
+                            $"HP: {(int)_trackedEnemy.CurrentHp} / {(int)_cachedEnemyData.hp}</line-height>";
     }
 
     private void UpdateBuildingInfoUI()

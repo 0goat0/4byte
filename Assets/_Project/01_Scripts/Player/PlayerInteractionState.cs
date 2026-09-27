@@ -28,9 +28,13 @@ public class PlayerInteractionState : MonoBehaviour
             return;
         }
 
+        InfoTarget?.SetSelected(false);
+
         InfoTarget = target;
         CommandParty = party;
         Mode = PlayerInteractionMode.Default;
+
+        InfoTarget?.SetSelected(true);
 
         OnSelectionChanged?.Invoke();
     }
@@ -76,6 +80,8 @@ public class PlayerInteractionState : MonoBehaviour
         {
             return;
         }
+
+        InfoTarget?.SetSelected(false);
 
         InfoTarget = null;
         CommandParty = null;

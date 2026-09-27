@@ -32,6 +32,7 @@ public class NetworkNavMeshMover : NetworkBehaviour
     public override void Spawned()
     {
         _agent.updatePosition = false;
+        _agent.acceleration = 9999f;
 
         // 이동은 StateAuthority 만 계산하고,
         // 클라이언트는 NetworkTransform으로 결과값만 전달받음
@@ -77,7 +78,7 @@ public class NetworkNavMeshMover : NetworkBehaviour
         _destination = destination;
 
         _agent.ResetPath();
-        _agent.velocity = Vector3.zero;
+        // _agent.velocity = Vector3.zero;
         // 목적지 설정 요청이 받아들여진 경우에만 도착 판정을 시작
         _hasActiveDestination = _agent.SetDestination(_destination);
 
@@ -104,5 +105,10 @@ public class NetworkNavMeshMover : NetworkBehaviour
 
         _destination = destination;
         _agent.SetDestination(_destination);
+    }
+
+    public void SetSpeed(float speed)
+    {
+        _agent.speed = speed;
     }
 }

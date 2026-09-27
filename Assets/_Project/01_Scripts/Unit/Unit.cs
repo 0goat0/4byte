@@ -13,9 +13,13 @@ public class Unit : NetworkBehaviour, ISelectable
 
     private PlayerStats _playerStats;
 
+    [SerializeField]
+    private Renderer _selectionIndicatorRenderer;
+
     private void Awake()
     {
         _playerStats = GetComponent<PlayerStats>();
+        SetSelected(false);
     }
 
     public override void Spawned()
@@ -50,6 +54,14 @@ public class Unit : NetworkBehaviour, ISelectable
     public void AttackMove(Vector3 destination)
     {
         _playerStats.CommandAttackMove(destination);
+    }
+
+    public void SetSelected(bool isSelected)
+    {
+        if (_selectionIndicatorRenderer == null)
+            return;
+
+        _selectionIndicatorRenderer.enabled = isSelected;
     }
 
     // -----------------------

@@ -1,26 +1,13 @@
 ﻿using UnityEngine;
+using Fusion;
 
-public class EngineeringBay : MonoBehaviour
+public class EngineeringBay : PlayerBuilding
 {
-    [SerializeField] private BuildingData labData;
-
-    public BuildingData LabData => labData;
-
-    public bool UpgradeUnit(PlayerStats targetUnit)
+    public bool UpgradeUnit(PlayerStats targetUnit, bool isAttack)
     {
-        if (labData == null || targetUnit == null) return false;
+        if (targetUnit == null || IsDestroyed) return false;
 
-        var fieldInfo = typeof(PlayerStats).GetField("data", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        if (fieldInfo == null) return false;
-
-        PlayerData unitData = fieldInfo.GetValue(targetUnit) as PlayerData;
-        if (unitData == null) return false;
-
-        targetUnit.defense += labData.defense;
-        targetUnit.attackDamage += labData.attackDamage;
-
-
-        Debug.Log("업그레이드");
+        targetUnit.RpcUpgradeStats(isAttack);
         return true;
     }
 }

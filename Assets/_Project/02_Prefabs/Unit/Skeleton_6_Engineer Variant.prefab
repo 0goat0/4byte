@@ -361,7 +361,7 @@ MonoBehaviour:
   detectRange: 15
   attackInterval: 1
   _attackDamage: 0
-  _defense: 0
+  _defense: 1
   _attackSpeed: 0
   _MoveSpeed: 0
   targetLayerMask:

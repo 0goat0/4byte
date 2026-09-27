@@ -50,10 +50,30 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7619080207853136324, guid: f18d254121d445e8ac8f2affa90180b8, type: 3}
       propertyPath: m_Name
-      value: Skeleton_3_Biologist
+      value: Skeleton_3_Biologist Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7619080207853136324, guid: f18d254121d445e8ac8f2affa90180b8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 857572846810571969}
   m_SourcePrefab: {fileID: 100100000, guid: f18d254121d445e8ac8f2affa90180b8, type: 3}
+--- !u!1 &3032861966498474877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7619080207853136324, guid: f18d254121d445e8ac8f2affa90180b8, type: 3}
+  m_PrefabInstance: {fileID: 4875862340540859065}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &857572846810571969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3032861966498474877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 492be5a7d323a0843bbcd06b11ae30f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FogRevealer

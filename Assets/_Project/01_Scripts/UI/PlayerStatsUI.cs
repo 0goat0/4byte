@@ -1,142 +1,117 @@
-﻿using TMPro;
+﻿using Fusion;
+using TMPro;
 using UnityEngine;
-using System.Reflection;
 using UnityEngine.UI;
 
 public class PlayerStatsUI : MonoBehaviour
 {
-    [Header("RTS Selection System Connection")]
-    [SerializeField] private PlayerInteractionState playerInteractionState; // 유닛 선택 매니저 등록
-
-    [Header("Data Asset (Runtime Preview)")]
-    [SerializeField] private PlayerData playerData;
-
-    [Header("UI Text Components")]
+    [Header("Connections")]
+    [SerializeField] private PlayerInteractionState playerInteractionState;
     [SerializeField] private TextMeshProUGUI unitInfoText;
-
-    [Header("Upgrade")]
     [SerializeField] private Button attackUpButton;
     [SerializeField] private Button defenseUpButton;
 
     private PlayerStats _trackedUnit;
-    private PlayerData _cachedData;
     private EnemyAI _trackedEnemy;
-    private EnemyData _cachedEnemyData;
-    private EngineeringBay _currentLab;
 
-    private void Start()
+    private PlayerBuilding _currentBuilding;
+
+    private void Awake()
     {
-        // 버튼 이벤트 리스너 등록
-        if (attackUpButton != null) attackUpButton.onClick.AddListener(OnAttackUpClicked);
-        if (defenseUpButton != null) defenseUpButton.onClick.AddListener(OnDefenseUpClicked);
+        attackUpButton?.onClick.AddListener(() => UpgradeAllUnits(true));
+        defenseUpButton?.onClick.AddListener(() => UpgradeAllUnits(false));
 
-        ClearUI();
+        SetUpgradeButtonsActive(false);
     }
 
-    private void OnEnable()
-    {
-        if (playerInteractionState != null)
-        {
-            // 선택 변경 이벤트 구독
-            playerInteractionState.OnSelectionChanged += HandleSelectionChanged;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (playerInteractionState != null)
-        {
-            playerInteractionState.OnSelectionChanged -= HandleSelectionChanged;
-        }
-    }
+    private void OnEnable() => playerInteractionState.OnSelectionChanged += HandleSelectionChanged;
+    private void OnDisable() => playerInteractionState.OnSelectionChanged -= HandleSelectionChanged;
 
     private void Update()
     {
-        // 선택된 플레이어 유닛 또는 적의 정보를 실시간으로 갱신
-        if (_trackedUnit != null && _trackedUnit.Object != null && _trackedUnit.Object.IsValid)
+        if (_trackedUnit != null)
         {
+            if (_trackedUnit.Object != null &&
+                _trackedUnit.Object.IsValid)
+            {
+                UpdateUnitInfoUI();
+            }
+            else
+            {
+                ClearUI();
+            }
+
+            return;
+        }
+
+        if (_trackedEnemy != null)
+        {
+            if (_trackedEnemy.Object != null &&
+                _trackedEnemy.Object.IsValid)
+            {
+                UpdateEnemyInfoUI();
+            }
+            else
+            {
+                ClearUI();
+            }
+
+            return;
+        }
+
+        if (_currentBuilding != null)
+        {
+            if (_currentBuilding.Object != null &&
+                _currentBuilding.Object.IsValid)
+            {
+                UpdateBuildingInfoUI();
+            }
+            else
+            {
+                ClearUI();
+            }
+        }
+    }
+
+    private void HandleSelectionChanged()
+    {
+        _trackedUnit = null;
+        _trackedEnemy = null;
+        _currentBuilding = null;
+        if (playerInteractionState == null) return;
+
+        if (playerInteractionState?.InfoTarget is not Component target)
+        {
+            ClearUI();
+            return;
+        }
+
+        _trackedUnit = target.GetComponentInParent<PlayerStats>(true);
+
+        if (_trackedUnit != null)
+        {
+            SetUpgradeButtonsActive(false);
             UpdateUnitInfoUI();
             return;
         }
 
-        if (_trackedEnemy != null && _trackedEnemy.Object != null && _trackedEnemy.Object.IsValid)
+        _trackedEnemy = target.GetComponentInParent<EnemyAI>(true);
+
+        if (_trackedEnemy != null)
         {
+            SetUpgradeButtonsActive(false);
             UpdateEnemyInfoUI();
             return;
         }
 
-        if (_trackedUnit != null || _trackedEnemy != null)
+        _currentBuilding = target.GetComponentInParent<PlayerBuilding>(true);
+
+        if (_currentBuilding != null)
         {
-            ClearUI();
-        }
-    }
+            SetUpgradeButtonsActive(_currentBuilding is EngineeringBay);
 
-    // PlayerStats 또는 EngineeringBay 추출
-    private void HandleSelectionChanged()
-    {
-        if (playerInteractionState == null) return;
-
-        // 유니티 컴포넌트 존재 검사
-        if (playerInteractionState.InfoTarget is Component targetComponent)
-        {
-            // 엔지니어링베이 인지 확인
-            EngineeringBay selectedLab = targetComponent.GetComponentInParent<EngineeringBay>();
-            if (selectedLab != null)
-            {
-                _trackedUnit = null;
-                _cachedData = null;
-                _trackedEnemy = null;
-                _cachedEnemyData = null;
-                _currentLab = selectedLab;
-
-                UpdateBuildingInfoUI();
-                SetUpgradeButtonsActive(true); // 업그레이드 버튼 활성화
-                return;
-            }
-
-            //플레이어 유닛 확인
-            PlayerStats selectedUnit = targetComponent.GetComponentInParent<PlayerStats>();
-            if (selectedUnit != null)
-            {
-                _trackedEnemy = null;
-                _cachedEnemyData = null;
-                _currentLab = null;
-                SetUpgradeButtonsActive(false); // 건물 전용 버튼 숨기기
-
-                _trackedUnit = selectedUnit;
-
-                // PlayerStats private data 가져옴
-                var fieldInfo = typeof(PlayerStats).GetField("data", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (fieldInfo != null)
-                {
-                    _cachedData = fieldInfo.GetValue(_trackedUnit) as PlayerData;
-                    if (_cachedData != null)
-                    {
-                        UpdateUnitInfoUI();
-                        return;
-                    }
-                }
-            }
-
-            // 적 유닛 확인
-            EnemyAI selectedEnemy = targetComponent.GetComponentInParent<EnemyAI>();
-            if (selectedEnemy != null)
-            {
-                _trackedUnit = null;
-                _cachedData = null;
-                _currentLab = null;
-
-                _trackedEnemy = selectedEnemy;
-                _cachedEnemyData = selectedEnemy.Data;
-
-                SetUpgradeButtonsActive(false);
-
-                if (_cachedEnemyData != null)
-                {
-                    UpdateEnemyInfoUI();
-                    return;
-                }
-            }
+            UpdateBuildingInfoUI();
+            return;
         }
 
         ClearUI();
@@ -145,112 +120,73 @@ public class PlayerStatsUI : MonoBehaviour
     private void ClearUI()
     {
         _trackedUnit = null;
-        _cachedData = null;
         _trackedEnemy = null;
-        _cachedEnemyData = null;
-        _currentLab = null;
+        _currentBuilding = null;
 
         if (unitInfoText != null)
         {
-            unitInfoText.text = "";
+            unitInfoText.text = string.Empty;
         }
 
         SetUpgradeButtonsActive(false);
     }
 
-    public void UpdateUnitInfoUI()
+    private void UpdateUnitInfoUI()
     {
-        if (_trackedUnit == null || _cachedData == null || unitInfoText == null) return;
+        if (_trackedUnit == null || _trackedUnit.Data == null || unitInfoText == null) return;
 
-        string sizeStr = _cachedData.size switch
-        {
-            PlayerSize.Small => "Small",
-            PlayerSize.Medium => "Medium",
-            PlayerSize.Large => "Large",
-            _ => _cachedData.size.ToString()
-        };
+        var data = _trackedUnit.Data;
 
-        string attackTypeStr = _cachedData.attackType switch
-        {
-            PlayerAttackType.Melee => "Melee",
-            PlayerAttackType.Ranged => "Ranged",
-            PlayerAttackType.AoE => "AoE",
-            _ => _cachedData.attackType.ToString()
-        };
-
-        unitInfoText.text = $"<line-height=85%><size=150%><b>{_cachedData.PlayerName}</b></size>\n\n" +
-                             $"Size: {sizeStr}<pos=45%>Attack Type: {attackTypeStr}\n\n" +
-                             $"HP: {(int)_trackedUnit.CurrentHp} / {(int)_cachedData.hp}<pos=45%>Defense: {_trackedUnit.defense}\n\n" +
-                             $"Attack: {_trackedUnit.attackDamage}<pos=45%>AttackSpeed: {_trackedUnit.attackSpeed}\n\n" +
-                             $"MoveSpeed: {_trackedUnit.MoveSpeed}</line-height>";
+        unitInfoText.text = $"<line-height=85%><size=150%><b>{data.PlayerName}</b></size>\n\n" +
+                            $"Size: {data.size}<pos=45%>Attack Type: {data.attackType}\n\n" +
+                            $"HP: {(int)_trackedUnit.CurrentHp} / {(int)data.hp}<pos=45%>Defense: {_trackedUnit.defense}\n\n" +
+                            $"Attack: {_trackedUnit.attackDamage}<pos=45%>AttackSpeed: {_trackedUnit.attackSpeed}\n\n" +
+                            $"MoveSpeed: {_trackedUnit.MoveSpeed}</line-height>";
     }
 
     private void UpdateEnemyInfoUI()
     {
-        if (_trackedEnemy == null || _cachedEnemyData == null || unitInfoText == null)
+        if (_trackedEnemy == null || _trackedEnemy.Data == null || unitInfoText == null)
             return;
 
-        unitInfoText.text = $"<line-height=85%><size=150%><b>{_cachedEnemyData.enemyName}</b></size>\n\n" +
-                            $"HP: {(int)_trackedEnemy.CurrentHp} / {(int)_cachedEnemyData.hp}</line-height>";
+        var data = _trackedEnemy.Data;
+
+        unitInfoText.text = $"<line-height=85%><size=150%><b>{data.enemyName}</b></size>\n\n" +
+                            $"HP: {(int)_trackedEnemy.CurrentHp} / {(int)data.hp}</line-height>";
     }
 
     private void UpdateBuildingInfoUI()
     {
-        if (_currentLab == null || unitInfoText == null) return;
+        if (_currentBuilding == null || _currentBuilding.Data == null || unitInfoText == null) return;
 
-        BuildingData labData = _currentLab.LabData;
-        if (labData == null) return;
+        var data = _currentBuilding.Data;
 
-        int maxLabHp = labData.hp;
-        int labDefense = labData.defense;
-
-        // 출력
-        unitInfoText.text = $"<line-height=85%><size=150%><b>{labData.buildingName}</b></size>\n\n" +
-                             $"HP: {maxLabHp} / {maxLabHp}<pos=45%>Defense: {labDefense}</line-height>";
-
+        unitInfoText.text = $"<line-height=85%><size=150%><b>{data.buildingName}</b></size>\n\n" +
+                            $"HP: {_currentBuilding.CurrentHp} / {data.hp}<pos=45%>Defense: {data.defense}</line-height>";
     }
 
     private void SetUpgradeButtonsActive(bool isActive)
     {
-        if (attackUpButton != null) attackUpButton.gameObject.SetActive(isActive);
-        if (defenseUpButton != null) defenseUpButton.gameObject.SetActive(isActive);
-    }
-
-    // 공격력 업그레이드
-    private void OnAttackUpClicked()
-    {
-        if (_currentLab == null || playerData == null) return;
-
-        // 베이스 공격 스텟 상승
-        playerData.attack += 5; // 증가 수치
-
-        if (_trackedUnit != null)
+        if (attackUpButton != null)
         {
-            _trackedUnit.attackDamage += 5;
+            attackUpButton.gameObject.SetActive(isActive);
         }
 
-        Debug.Log($"공격력 연구 완료 현재: {playerData.attack}");
-
-        // UI 즉시 갱신
-        if (_trackedUnit != null) UpdateUnitInfoUI();
-        else UpdateBuildingInfoUI();
+        if (defenseUpButton != null)
+        {
+            defenseUpButton.gameObject.SetActive(isActive);
+        }
     }
 
-    private void OnDefenseUpClicked()
+    private void UpgradeAllUnits(bool isAttack)
     {
-        if (_currentLab == null || playerData == null) return;
+        if (_currentBuilding == null) return;
 
-        playerData.defense += 2;
+        if (_currentBuilding is not EngineeringBay engineeringBay) return;
 
-        if (_trackedUnit != null)
+        foreach (var unit in FindObjectsByType<PlayerStats>(FindObjectsSortMode.None))
         {
-            _trackedUnit.defense += 2;
+            engineeringBay.UpgradeUnit(unit, isAttack);
         }
-
-        Debug.Log($"방어력 연구 완료 현재: {playerData.defense}");
-
-        // UI 갱신
-        if (_trackedUnit != null) UpdateUnitInfoUI();
-        else UpdateBuildingInfoUI();
     }
 }

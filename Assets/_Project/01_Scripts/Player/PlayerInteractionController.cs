@@ -13,6 +13,7 @@ public class PlayerInteractionController : MonoBehaviour
 
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _enemyMask;
+    [SerializeField] private LayerMask _uiMask;
 
     private void OnEnable()
     {

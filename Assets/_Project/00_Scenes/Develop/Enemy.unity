@@ -1318,6 +1318,9 @@ MonoBehaviour:
   maxHp: 100
   _IsDestroyed:
     _value: 0
+  startActive: 1
+  _IsActive:
+    _value: 0
   minSpawnRadius: 22
   maxSpawnRadius: 44
   checkRadius: 2
@@ -1534,6 +1537,9 @@ MonoBehaviour:
   enemyPrefab: {fileID: 6896496255936228643, guid: 0493d71be97a55d4c8d5c1ea552e7c26, type: 3}
   maxHp: 100
   _IsDestroyed:
+    _value: 0
+  startActive: 1
+  _IsActive:
     _value: 0
   minSpawnRadius: 22
   maxSpawnRadius: 44

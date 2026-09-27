@@ -38,6 +38,12 @@ public class FogOfWarManager : MonoBehaviour
         fogTexture.Apply();
 
         GameObject fogPlane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+
+        if (fogPlane.TryGetComponent(out Collider fogCollider))
+        {
+            fogCollider.enabled = false;
+        }
+
         fogPlane.name = "FogPlane";
         fogPlane.transform.position = new Vector3(0f, fogHeight, 0f);
         fogPlane.transform.localScale = new Vector3(worldSize, worldSize, 1f);

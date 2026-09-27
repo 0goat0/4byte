@@ -111,6 +111,17 @@ public class EnemyAI : NetworkBehaviour, IDamageable
         if (navMeshAgent != null)
         {
             navMeshAgent.avoidancePriority = (int)(Object.Id.Raw % 100);
+
+            if (HasStateAuthority)
+            {
+                navMeshAgent.enabled = true;
+                navMeshAgent.Warp(transform.position);
+
+                // NetworkTransform도 같이 텔레포트 처리해서
+                // 클라이언트 쪽에서 죽은 자리→스폰 위치로 미끄러지는 보간 현상 방지
+                networkTransform.Teleport(position: transform.position, rotation: transform.rotation);
+            }
+
         }
         //else
         //{

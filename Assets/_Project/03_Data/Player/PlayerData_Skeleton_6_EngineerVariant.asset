@@ -15,9 +15,9 @@ MonoBehaviour:
   PlayerName: 
   size: 0
   attackType: 0
-  hp: 0
-  attack: 0
-  defense: 0
-  attackSpeed: 0
-  moveSpeed: 0
+  hp: 300
+  attack: 10
+  defense: 2
+  attackSpeed: 10
+  moveSpeed: 5
   Prefab: {fileID: 0}

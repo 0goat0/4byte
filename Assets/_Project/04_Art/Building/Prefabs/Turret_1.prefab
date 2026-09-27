@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Turret_1
       objectReference: {fileID: 0}
+    - target: {fileID: 848177203173195873, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 2940064014162276586, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
       propertyPath: SortKey
       value: 1850586354
@@ -32,6 +36,18 @@ PrefabInstance:
       propertyPath: shootEffectR
       value: 
       objectReference: {fileID: 2963306239284108852}
+    - target: {fileID: 3930017510513835424, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7190576356447731288, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8217725916380227530, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8221117541364617374, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -72,6 +88,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8461476851653393291, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8615477824534424870, guid: 578bd2bd5e867894296e0aa3c5a80eae, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.32
@@ -108,6 +128,10 @@ PrefabInstance:
     - target: {fileID: 5583093682210430548, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
       propertyPath: m_Name
       value: HCFX_Hit_10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5583093682210430548, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5583093682210430549, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
       propertyPath: m_LocalScale.x
@@ -161,6 +185,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5586085797243256104, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -187,6 +215,10 @@ PrefabInstance:
     - target: {fileID: 5583093682210430548, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
       propertyPath: m_Name
       value: HCFX_Hit_10 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5583093682210430548, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5583093682210430549, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
       propertyPath: m_LocalScale.x
@@ -239,6 +271,10 @@ PrefabInstance:
     - target: {fileID: 5583093682210430549, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5586085797243256104, guid: 558c548145e53114192a7c756d0afd0c, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

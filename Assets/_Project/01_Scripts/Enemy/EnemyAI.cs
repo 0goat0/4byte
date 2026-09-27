@@ -69,11 +69,15 @@ public class EnemyAI : NetworkBehaviour, IDamageable
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
 
+    [Networked] public int DestinationIndex { get; set; }
+    private NavMeshAgent navMeshAgent; // NetworkNavMeshMover와 별개로 참조만 가져옴
+
     private void Awake()
     {
         Mover = GetComponent<NetworkNavMeshMover>();
         Animator = GetComponentInChildren<EnemyAnimeController>();
         networkTransform = GetComponent<NetworkTransform>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
     public override void Spawned()
@@ -97,10 +101,27 @@ public class EnemyAI : NetworkBehaviour, IDamageable
             StateType = EnemyStateType.Idle;
             Target = null;
             IsAlerted = false;
+            DestinationIndex = 0;
             AttackCooldown = TickTimer.None;
             DetectTimer = TickTimer.None;
             DeathTimer = TickTimer.None;
             Animator.PlaySpawn();
+        }
+        // 우선순위를 유닛마다 다르게 (0~99 범위, 낮을수록 우선순위 높음)
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.avoidancePriority = (int)(Object.Id.Raw % 100);
+
+            if (HasStateAuthority)
+            {
+                navMeshAgent.enabled = true;
+                navMeshAgent.Warp(transform.position);
+
+                // NetworkTransform도 같이 텔레포트 처리해서
+                // 클라이언트 쪽에서 죽은 자리→스폰 위치로 미끄러지는 보간 현상 방지
+                networkTransform.Teleport(position: transform.position, rotation: transform.rotation);
+            }
+
         }
         //else
         //{

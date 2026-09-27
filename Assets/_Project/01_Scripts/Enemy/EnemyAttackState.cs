@@ -1,5 +1,6 @@
 ﻿using Fusion;
 using UnityEngine;
+using static EnemyAI;
 
 public class EnemyAttackState : IEnemyState
 {
@@ -57,7 +58,7 @@ public class EnemyAttackState : IEnemyState
         {
             Debug.Log("공격중");
             enemy.AttackCooldown = TickTimer.CreateFromSeconds(enemy.Runner, enemy.AttackInterval);
-            enemy.Animator.PlayAttack();
+            enemy.RPC_PlayAnim(EnemyAnimTrigger.Attack);
             IDamageable damageable = enemy.Target.GetComponent<IDamageable>();
             if (damageable != null)
             {

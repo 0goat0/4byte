@@ -80,6 +80,27 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
 
     [Networked] public int DestinationIndex { get; set; }
     private NavMeshAgent navMeshAgent; // NetworkNavMeshMover와 별개로 참조만 가져옴
+    public enum EnemyAnimTrigger
+    {
+        Attack,
+        RightSlashAttack,
+        SpinAttackStart,
+        SpinAttackOn,
+        SpinAttackOff
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_PlayAnim(EnemyAnimTrigger trigger)
+    {
+        switch (trigger)
+        {
+            case EnemyAnimTrigger.Attack: Animator.PlayAttack(); break;
+            case EnemyAnimTrigger.RightSlashAttack: Animator.PlayRightSlashAttack(); break;
+            case EnemyAnimTrigger.SpinAttackStart: Animator.PlaySpinAttackStart(); break;
+            case EnemyAnimTrigger.SpinAttackOn: Animator.PlaySpinAttack(); break;
+            case EnemyAnimTrigger.SpinAttackOff: Animator.StopSpinAttack(); break;
+        }
+    }
 
     private void Awake()
     {

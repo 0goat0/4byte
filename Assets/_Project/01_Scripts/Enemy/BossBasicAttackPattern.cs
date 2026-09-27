@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static EnemyAI;
 
 // 패턴 1: 기본 근접 공격
 // 기존 EnemyAttackState의 단일 타격 로직을 패턴 형태로 옮긴 버전.
@@ -34,7 +35,7 @@ public class BossBasicAttackPattern : MonoBehaviour, IBossPattern
 
         enemy.Mover?.Stop();
         enemy.FaceTargetInstant(enemy.Target.transform.position);
-        enemy.Animator.PlayRightSlashAttack();
+        enemy.RPC_PlayAnim(EnemyAnimTrigger.RightSlashAttack);
         Debug.Log("[Boss] 기본 공격");
     }
 

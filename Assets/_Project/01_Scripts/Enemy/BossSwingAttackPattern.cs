@@ -1,5 +1,6 @@
 ﻿using Fusion;
 using UnityEngine;
+using static EnemyAI;
 
 // 패턴 2: 광역 휘두르기
 // 보스 주변 반경에 있는 모든 타겟에게 데미지를 주는 패턴.
@@ -45,7 +46,7 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
         enemy.Mover?.Stop();
         enemy.FaceTargetInstant(enemy.Target.transform.position);
-        enemy.Animator.PlaySpinAttackStart();
+        enemy.RPC_PlayAnim(EnemyAnimTrigger.SpinAttackStart);
         Debug.Log("[Boss] 휘두르기 예고");
     }
 
@@ -55,7 +56,7 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
         if (!damageApplied && elapsed >= telegraphDuration)
         {
-            enemy.Animator.PlaySpinAttack();
+            enemy.RPC_PlayAnim(EnemyAnimTrigger.SpinAttackOn);
             damageApplied = true;
             ApplySwingDamage(enemy);
         }
@@ -68,7 +69,7 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
     public void Exit(EnemyAI enemy)
     {
-        enemy.Animator.StopSpinAttack();
+        enemy.RPC_PlayAnim(EnemyAnimTrigger.SpinAttackOff);
     }
 
     private void ApplySwingDamage(EnemyAI enemy)

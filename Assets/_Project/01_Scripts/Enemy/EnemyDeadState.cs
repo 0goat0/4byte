@@ -20,7 +20,6 @@ public class EnemyDeadState : IEnemyState
         {
             enemy.DeathTimer = TickTimer.CreateFromSeconds(enemy.Runner, enemy.DespawnDelay);
         }
-
         // 사망 애니메이션 재생, 사운드 재생, 골드 드랍(enemy.Data.goldDrop) 처리 등을
         // 여기서 호출해주면 됨 (연출/보상 로직)
     }

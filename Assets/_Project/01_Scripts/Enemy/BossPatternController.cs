@@ -26,6 +26,11 @@ public interface IBossPattern
     void Tick(EnemyAI enemy);
     bool IsFinished(EnemyAI enemy);
     void Exit(EnemyAI enemy);
+
+
+    // 예고 연출 (모든 클라이언트에서 호출됨, 서버 로직 아님)
+    void ShowTelegraph(EnemyAI enemy);
+    void HideTelegraph(EnemyAI enemy);
 }
 
 // 보스 전용 컴포넌트. EnemyAI가 붙어있는 보스 프리팹에 나란히 붙여서 사용.
@@ -53,6 +58,7 @@ public class BossPatternController : NetworkBehaviour
     // 클라이언트 연출(예고 이펙트 등) 동기화를 위한 현재 패턴 인덱스. -1이면 패턴 없음.
     [Networked, OnChangedRender(nameof(OnPatternIndexChanged))]
     public int CurrentPatternIndex { get; set; }
+    private int lastPatternIndex = -1;
 
     public bool HasPatternRunning => currentPattern != null;
 
@@ -138,9 +144,14 @@ public class BossPatternController : NetworkBehaviour
         {
             return null;
         }
+        //스윙이 있을 때 스윙 먼저
+        IBossPattern swing = candidates.Find(p => p is BossSwingAttackPattern);
+        if (swing != null)
+        {
+            return swing;
+        }
 
-        // 후보 중 랜덤 선택. 필요하면 가중치/우선순위 방식으로 교체 가능.
-        return candidates[Random.Range(0, candidates.Count)];
+        return candidates[0];
     }
 
     private bool IsOnCooldown(IBossPattern pattern)
@@ -155,16 +166,17 @@ public class BossPatternController : NetworkBehaviour
     private void StartPattern(EnemyAI owner, IBossPattern pattern)
     {
         currentPattern = pattern;
-        cooldownMap[pattern.PatternId] = TickTimer.CreateFromSeconds(Runner, pattern.Cooldown);
-
         CurrentPatternIndex = patterns.IndexOf(pattern);
-
         pattern.Enter(owner);
     }
 
     private void EndCurrentPattern(EnemyAI owner)
     {
-        currentPattern?.Exit(owner);
+        if (currentPattern != null)
+        {
+            cooldownMap[currentPattern.PatternId] = TickTimer.CreateFromSeconds(Runner, currentPattern.Cooldown); // 종료 시점에 시작
+            currentPattern.Exit(owner);
+        }
         currentPattern = null;
         CurrentPatternIndex = -1;
     }
@@ -173,6 +185,18 @@ public class BossPatternController : NetworkBehaviour
     // 예고 이펙트/사운드처럼 클라이언트에서도 재생해야 하는 연출이 있으면 여기서 처리.
     private void OnPatternIndexChanged()
     {
-        // 예: patterns[CurrentPatternIndex] 에 맞는 이펙트 재생
+        // 이전 패턴 예고 정리
+        if (lastPatternIndex >= 0 && lastPatternIndex < patterns.Count)
+        {
+            patterns[lastPatternIndex].HideTelegraph(enemy);
+        }
+
+        // 새 패턴 예고 시작
+        if (CurrentPatternIndex >= 0 && CurrentPatternIndex < patterns.Count)
+        {
+            patterns[CurrentPatternIndex].ShowTelegraph(enemy);
+        }
+
+        lastPatternIndex = CurrentPatternIndex;
     }
 }

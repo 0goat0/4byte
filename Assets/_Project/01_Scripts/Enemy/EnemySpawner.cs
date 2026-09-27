@@ -13,6 +13,10 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
     [Networked] private float CurrentHp { get; set; }
     [Networked] public NetworkBool IsDestroyed { get; set; }
 
+    [Header("On/Off (GameManager가 단계별로 제어)")]
+    [SerializeField] private bool startActive = true; // 시작 시 켜진 상태로 시작할지 여부
+    [Networked] public NetworkBool IsActive { get; set; }
+
 
     [Header("Spawn Area")]
     [SerializeField] private float minSpawnRadius;   // 건물과 너무 붙지 않도록 최소 거리
@@ -43,6 +47,7 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
         if (HasStateAuthority)
         {
             CurrentHp = maxHp;
+            IsActive = startActive;
         }
 
         // Runner의 GameObject에서 PooledNetworkObjectProvider 컴포넌트를 찾아옴
@@ -74,6 +79,11 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
         {
             return;
         }
+        //GameManager에 의해 꺼진 상태면 스폰 로직 자체를 멈춤 (파괴는 아님, 재개 가능)
+        if (!IsActive)
+        {
+            return;
+        }
         //비활성화 / 파괴된 경우 멈춤
         if (!enabled || !gameObject.activeInHierarchy)
         {
@@ -101,7 +111,7 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
             RemainingInWave--;
             SpawnTimer = TickTimer.CreateFromSeconds(Runner, singleSpawnInterval);
 
-            if(RemainingInWave == 0)
+            if (RemainingInWave == 0)
             {
                 RemainingInBurst = burstEnemyNum;
                 WaveTimer = TickTimer.CreateFromSeconds(Runner, waveSpawnInterval);
@@ -111,14 +121,67 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
         if (!WaveTimer.ExpiredOrNotRunning(Runner))
         {
             return;
-        } 
-         if (maxEnemyNum <= spawnedEnemies.Count)
+        }
+        if (maxEnemyNum <= spawnedEnemies.Count)
         {
             return;
         }
         RemainingInWave = waveEnemyNum; // 이번 웨이브에 낼 마릿수
-       
+
     }
+    // ─────────────────────────────────────────
+    // GameManager가 단계별로 스포너를 켜고 끄기 위한 공개 API
+    // ─────────────────────────────────────────
+
+    /// <summary>
+    /// State Authority(호스트) 쪽 GameManager가 직접 호출할 때 사용.
+    /// 클라이언트에서 호출해야 한다면 아래 RPC_SetActive를 사용할 것.
+    /// </summary>
+    public void SetSpawnerActive(bool active)
+    {
+        if (!HasStateAuthority) return;
+        if (IsDestroyed) return; // 이미 파괴된 스포너는 다시 켤 수 없음
+        if (IsActive == active) return;
+
+        IsActive = active;
+
+        if (active)
+        {
+            ResumeTimersOnActivate();
+        }
+    }
+
+    /// <summary>
+    /// GameManager가 클라이언트에서도 호출할 수 있도록 하는 RPC.
+    /// 실제 처리는 StateAuthority에서만 수행됨.
+    /// </summary>
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_SetActive(NetworkBool active)
+    {
+        SetSpawnerActive(active);
+    }
+
+    /// <summary>
+    /// 꺼져있던 동안 타이머가 이미 만료된 상태로 남아있으면
+    /// 다시 켜지자마자 즉시(버스트로) 몬스터가 쏟아지므로,
+    /// 재개 시점에 타이머를 다시 세팅해 자연스럽게 이어지도록 함.
+    /// </summary>
+    private void ResumeTimersOnActivate()
+    {
+        if (RemainingInBurst > 0)
+        {
+            BurstTimer = TickTimer.CreateFromSeconds(Runner, burstSpawnInterval);
+        }
+        else if (RemainingInWave > 0)
+        {
+            SpawnTimer = TickTimer.CreateFromSeconds(Runner, singleSpawnInterval);
+        }
+        else
+        {
+            WaveTimer = TickTimer.CreateFromSeconds(Runner, waveSpawnInterval);
+        }
+    }
+
     private void SpawnEnemy(Vector3 pos)
     {
         // ★ 이렇게만 호출하면 됨 - Provider를 직접 몰라도 됨
@@ -139,7 +202,7 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
         Gizmos.DrawWireSphere(transform.position, maxSpawnRadius);
     }
 
-    
+
     private void TrySpawnEnemyAroundBuilding()
     {
         Vector3 pos = GetSpawnPosition();
@@ -174,20 +237,20 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
     public void TakeDamage(float damage, NetworkObject attacker)
     {
         // 데미지 처리는 StateAuthority에서만
-        if (!HasStateAuthority) 
-        { 
-            return; 
+        if (!HasStateAuthority)
+        {
+            return;
         }
-        if (IsDestroyed) 
-        { 
-            return; 
+        if (IsDestroyed)
+        {
+            return;
         }
 
         CurrentHp -= damage;
         if (CurrentHp <= 0f)
         {
             OnSpawnerDestroyed();
-        } 
+        }
     }
     private void OnSpawnerDestroyed()
     {

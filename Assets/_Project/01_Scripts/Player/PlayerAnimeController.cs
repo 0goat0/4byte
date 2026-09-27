@@ -8,7 +8,7 @@ public class PlayerAnimeController : MonoBehaviour
     private static readonly int IsAttacking = Animator.StringToHash("IsAttack");
     private static readonly int DieTrigger = Animator.StringToHash("OnDie");
 
-
+    
     private void Awake()
     {
         animator = GetComponent<Animator>();

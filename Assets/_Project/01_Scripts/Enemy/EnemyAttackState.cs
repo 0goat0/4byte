@@ -11,7 +11,7 @@ public class EnemyAttackState : IEnemyState
     {
         enemy.Mover?.Stop();
         Debug.Log("공격시작");
-        enemy.Animator.SetState(EnemyStateType.Attack);
+        //enemy.Animator.SetState(EnemyStateType.Attack);
 
         patternController = enemy.GetComponent<BossPatternController>();
     }
@@ -30,7 +30,7 @@ public class EnemyAttackState : IEnemyState
         }
         //공격시작
         Vector3 targetPos = enemy.Target.transform.position;
-        //float distance = Vector3.Distance(enemy.transform.position, targetPos);
+        enemy.FaceTarget(targetPos);
         float distance = DistanceUtil.GetDistanceToTarget(enemy.transform.position, enemy.Target);
 
         // 보스가 패턴(돌진 등)을 실행 중일 때는 사거리 체크로 인해
@@ -57,6 +57,7 @@ public class EnemyAttackState : IEnemyState
         {
             Debug.Log("공격중");
             enemy.AttackCooldown = TickTimer.CreateFromSeconds(enemy.Runner, enemy.AttackInterval);
+            enemy.Animator.PlayAttack();
             IDamageable damageable = enemy.Target.GetComponent<IDamageable>();
             if (damageable != null)
             {

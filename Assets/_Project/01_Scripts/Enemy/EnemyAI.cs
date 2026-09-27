@@ -70,20 +70,24 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
     [Networked] public TickTimer DeathTimer { get; set; }
     public float DespawnDelay = 2f;
 
-    //public NavMeshAgent agent;
     public EnemyAnimeController Animator { get; set; }
     public NetworkNavMeshMover Mover { get; set; }
-
+    private NetworkTransform networkTransform;
     public bool IsAlive => StateType != EnemyStateType.Dead;
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
 
+    [Networked] public int DestinationIndex { get; set; }
+    private NavMeshAgent navMeshAgent; // NetworkNavMeshMover와 별개로 참조만 가져옴
+
     private void Awake()
     {
-        //agent = GetComponent<NavMeshAgent>();
         Mover = GetComponent<NetworkNavMeshMover>();
         Animator = GetComponentInChildren<EnemyAnimeController>();
+        networkTransform = GetComponent<NetworkTransform>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        
         SetSelected(false);
     }
 
@@ -108,10 +112,27 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
             StateType = EnemyStateType.Idle;
             Target = null;
             IsAlerted = false;
+            DestinationIndex = 0;
             AttackCooldown = TickTimer.None;
             DetectTimer = TickTimer.None;
             DeathTimer = TickTimer.None;
             Animator.PlaySpawn();
+        }
+        // 우선순위를 유닛마다 다르게 (0~99 범위, 낮을수록 우선순위 높음)
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.avoidancePriority = (int)(Object.Id.Raw % 100);
+
+            if (HasStateAuthority)
+            {
+                navMeshAgent.enabled = true;
+                navMeshAgent.Warp(transform.position);
+
+                // NetworkTransform도 같이 텔레포트 처리해서
+                // 클라이언트 쪽에서 죽은 자리→스폰 위치로 미끄러지는 보간 현상 방지
+                networkTransform.Teleport(position: transform.position, rotation: transform.rotation);
+            }
+
         }
         //else
         //{
@@ -193,6 +214,10 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
         }
+        else
+        {
+            //Animator.PlayHit();
+        }
     }
 
     public void SetSelected(bool isSelected)
@@ -234,6 +259,41 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
         Animator.SetState(EnemyStateType.Idle); 
         // IsChase/IsAttack 둘 다 false로
         // 콜라이더를 죽을 때 껐다면 여기서 다시 켜주는 처리 등을 추가
+    }
+
+
+    public void FaceTarget(Vector3 targetPosition, float rotationSpeed = 720f)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        Vector3 direction = targetPosition - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Runner.DeltaTime);
+    }
+
+    // 즉시 스냅 회전이 필요할 때 (패턴 Enter 시점 등)
+    public void FaceTargetInstant(Vector3 targetPosition)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        Vector3 direction = targetPosition - transform.position;
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        transform.rotation = targetRotation;
+
+        // MoveTo()에서 쓰는 것과 같은 방식: 즉시 스냅되도록 Teleport로 회전값 전파
+        networkTransform.Teleport(rotation: targetRotation);
     }
 
     private void OnDrawGizmosSelected()

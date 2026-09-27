@@ -33,7 +33,8 @@ public class BossBasicAttackPattern : MonoBehaviour, IBossPattern
         damageApplied = false;
 
         enemy.Mover?.Stop();
-        enemy.Animator.SetState(EnemyStateType.Attack);
+        enemy.FaceTargetInstant(enemy.Target.transform.position);
+        enemy.Animator.PlayRightSlashAttack();
         Debug.Log("[Boss] 기본 공격");
     }
 
@@ -67,4 +68,6 @@ public class BossBasicAttackPattern : MonoBehaviour, IBossPattern
             damageable.TakeDamage(enemy.Data.attack * damageMultiplier, enemy.Object);
         }
     }
+    public void ShowTelegraph(EnemyAI enemy) { }
+    public void HideTelegraph(EnemyAI enemy) { }
 }

@@ -92,7 +92,7 @@ public class BossSwingAttackPattern : MonoBehaviour, IBossPattern
 
         telegraphVisual.SetActive(true);
         // 데칼/링 메시가 반지름 1 기준으로 만들어졌다면 swingRadius에 맞춰 스케일
-        telegraphVisual.transform.localScale = new Vector3(swingRadius * 2f, telegraphVisual.transform.localScale.y, swingRadius * 2f);
+        telegraphVisual.transform.localScale = new Vector3(swingRadius, telegraphVisual.transform.localScale.y, swingRadius);
     }
 
     public void HideTelegraph(EnemyAI enemy)

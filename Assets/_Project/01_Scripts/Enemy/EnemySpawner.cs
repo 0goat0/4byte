@@ -269,4 +269,14 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
         // 오브젝트 자체를 없앰
         Runner.Despawn(Object);
     }
+    //다음 웨이브까지 남은 시간(초). 표시할 게 없으면 null
+    public float? GetNextWaveRemainingTime()
+    {
+        if (IsDestroyed || !IsActive) return null;
+        if (RemainingInWave > 0) return null; // 웨이브 소환 진행 중
+
+        float? remaining = WaveTimer.RemainingTime(Runner);
+        if (remaining == null || remaining <= 0f) return null;
+        return remaining;
+    }
 }

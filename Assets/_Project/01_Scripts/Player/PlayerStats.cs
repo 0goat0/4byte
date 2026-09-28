@@ -20,7 +20,7 @@ public enum PlayerStateType
     Dead
 }
 
-public class PlayerStats : NetworkBehaviour, IDamageable
+public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
 {
     [Header("Data")]
     //이름, 크기(소형, 중형, 대형), 공격타입(근접, 원거리, 광역)
@@ -29,6 +29,9 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //몬스터 프리펩
     [SerializeField] private PlayerData data;
     public PlayerData Data => data;
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => data != null ? data.hp : 0f;
+    public event System.Action<float, float> OnHealthChanged;
 
     //[Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
     //public NetworkString<_32> playerName { get; set; }
@@ -57,7 +60,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //상태 체크
     [Networked, OnChangedRender(nameof(OnStateTypeChanged))]
     public PlayerStateType StateType { get; private set; }
-    [Networked] public float CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] public float CurrentHp { get; set; }
     [Networked] public NetworkObject Target { get; set; }
     [Networked] public TickTimer AttackCooldown { get; set; } // 쿨타임 타이머
     [Networked] public TickTimer DetectTimer { get; set; }
@@ -75,7 +78,21 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     private readonly Collider[] _targetResults = new Collider[TargetBufferCapacity];
     private Dictionary<PlayerStateType, IPlayerState> _states;
     private IPlayerState _currentState;
+    private WorldHealthBarTarget _healthBarTarget;
 
+    [OnChangedRender(nameof(OnKillsChanged))]
+    [Networked] public int Kills { get; set; }
+    [Networked] public int AttackLevel { get; set; }
+    [Networked] public int DefenseLevel { get; set; }
+
+    private void OnKillsChanged()
+    {
+        var ui = FindAnyObjectByType<PlayerStatsUI>();
+        if (ui != null)
+        {
+            ui.UpdateTotalKillUI();
+        }
+    }
     private void Awake()
     {
         Mover = GetComponent<NetworkNavMeshMover>();
@@ -83,6 +100,12 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     }
     public override void Spawned()
     {
+        var ui = FindAnyObjectByType<PlayerStatsUI>();
+        if (ui != null)
+        {
+            ui.UpdateTotalKillUI();
+        }
+
         _states = new Dictionary<PlayerStateType, IPlayerState>
         {
             { PlayerStateType.Idle, new PlayerIdleState() },
@@ -116,6 +139,8 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
         ApplyStateVisual(StateType);
 
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
+
         #region Name
         //if (Object.HasInputAuthority)
         //{
@@ -133,6 +158,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable
         //    UpdateNameUI(string.IsNullOrEmpty(currentNetName) ? "Connecting..." : currentNetName);
         //}
         #endregion
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
     }
 
     public override void FixedUpdateNetwork()
@@ -197,7 +227,6 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
         if (!_states.TryGetValue(stateType, out IPlayerState nextState))
         {
-            Debug.LogError($"등록되지 않은 상태입니다: {stateType}", this);
             return;
         }
 
@@ -212,6 +241,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     private void OnStateTypeChanged()
     {
         ApplyStateVisual(StateType);
+    }
+
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
     private void ApplyStateVisual(PlayerStateType stateType)
@@ -237,7 +271,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable
             this.defense += 1f;
         }
 
-        Debug.Log($"[서버] {gameObject.name} 스탯 강화 완료! 현재 공격력: {this.attackDamage}, 방어력: {this.defense}");
+        Debug.Log($"업그레이드 완료");
     }
     public void CommandMove(Vector3 destination)
     {
@@ -321,11 +355,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
     public void TakeDamage(float damage, NetworkObject attacker)
     {
-        //접근 권한은 호스트에게
         if (!HasStateAuthority || StateType == PlayerStateType.Dead)
             return;
 
-        CurrentHp -= damage;
+        float finalDamage = Mathf.Max((int)damage - data.defense, 1f);
+        CurrentHp = Mathf.Clamp(CurrentHp - finalDamage, 0, data.hp);
 
         if (CurrentHp <= 0f)
         {

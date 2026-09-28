@@ -2,12 +2,16 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine.EventSystems;
 
-public class PlayerStatsUI : MonoBehaviour
+public class PlayerStatsUI : NetworkBehaviour
 {
     [Header("Connections")]
     [SerializeField] private PlayerInteractionState playerInteractionState;
     [SerializeField] private TextMeshProUGUI unitInfoText;
+    [SerializeField] private TextMeshProUGUI totalKillText;
     [SerializeField] private Button attackUpButton;
     [SerializeField] private Button defenseUpButton;
 
@@ -18,17 +22,36 @@ public class PlayerStatsUI : MonoBehaviour
 
     private void Awake()
     {
-        attackUpButton?.onClick.AddListener(() => UpgradeAllUnits(true));
-        defenseUpButton?.onClick.AddListener(() => UpgradeAllUnits(false));
-
         SetUpgradeButtonsActive(false);
     }
 
     private void OnEnable() => playerInteractionState.OnSelectionChanged += HandleSelectionChanged;
     private void OnDisable() => playerInteractionState.OnSelectionChanged -= HandleSelectionChanged;
+    private void Start()
+    {
+        Invoke(nameof(UpdateTotalKillUI), 0.5f);
+    }
 
     private void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if (_trackedUnit != null)
+        {
+            if (_trackedUnit.Object != null && _trackedUnit.Object.IsValid)
+            {
+                UpdateUnitInfoUI();
+            }
+            else
+            {
+                ClearUI();
+            }
+            return;
+        }
+
         if (_trackedUnit != null)
         {
             if (_trackedUnit.Object != null &&
@@ -72,7 +95,6 @@ public class PlayerStatsUI : MonoBehaviour
             }
         }
     }
-
     private void HandleSelectionChanged()
     {
         _trackedUnit = null;
@@ -86,6 +108,7 @@ public class PlayerStatsUI : MonoBehaviour
             return;
         }
 
+        // 1. 선택된 대상이 아군 유닛인지 확인
         _trackedUnit = target.GetComponentInParent<PlayerStats>(true);
 
         if (_trackedUnit != null)
@@ -109,12 +132,79 @@ public class PlayerStatsUI : MonoBehaviour
         if (_currentBuilding != null)
         {
             SetUpgradeButtonsActive(_currentBuilding is EngineeringBay);
-
             UpdateBuildingInfoUI();
             return;
         }
 
         ClearUI();
+    }
+    public void UpdateTotalKillUI()
+    {
+        if (totalKillText == null) return;
+
+        var runner = FindAnyObjectByType<NetworkRunner>();
+        if (runner == null || !runner.IsRunning)
+        {
+            return;
+        }
+
+        // Key: Player ID (int), Value: 총 킬수 (int)
+        Dictionary<int, int> playerKillsMap = new Dictionary<int, int>();
+        int localPlayerId = runner.LocalPlayer.PlayerId;
+
+        // PlayerStats 유닛 조사
+        var allUnits = FindObjectsByType<PlayerStats>(FindObjectsSortMode.None);
+
+        foreach (var unit in allUnits)
+        {
+            if (unit != null && unit.Object != null)
+            {
+                int playerId;
+
+                if (unit.Object.InputAuthority == PlayerRef.None || unit.Object.InputAuthority.PlayerId == -1)
+                {
+                    playerId = localPlayerId;
+                }
+                else
+                {
+                    playerId = unit.Object.InputAuthority.PlayerId;
+                }
+
+                if (!playerKillsMap.ContainsKey(playerId))
+                {
+                    playerKillsMap[playerId] = 0;
+                }
+                playerKillsMap[playerId] += unit.Kills;
+            }
+        }
+
+        if (playerKillsMap.Count == 0)
+        {
+            playerKillsMap[localPlayerId] = 0;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        int index = 0;
+
+        foreach (var kvp in playerKillsMap)
+        {
+            if (kvp.Key == localPlayerId)
+            {
+                sb.Append($"<b>player {kvp.Key} : {kvp.Value} (You)");
+            }
+            else
+            {
+                sb.Append($"player {kvp.Key} : {kvp.Value}(Kill)");
+            }
+
+            if (index < playerKillsMap.Count + 1)
+            {
+                sb.Append("\n");
+            }
+            index++;
+        }
+
+        totalKillText.text = sb.ToString();
     }
 
     private void ClearUI()
@@ -177,16 +267,34 @@ public class PlayerStatsUI : MonoBehaviour
             defenseUpButton.gameObject.SetActive(isActive);
         }
     }
-
-    private void UpgradeAllUnits(bool isAttack)
+    public void UpgradeAllUnits(bool isAttack)
     {
         if (_currentBuilding == null) return;
-
         if (_currentBuilding is not EngineeringBay engineeringBay) return;
 
-        foreach (var unit in FindObjectsByType<PlayerStats>(FindObjectsSortMode.None))
+        PlayerRef myPlayerRef = engineeringBay.Runner.LocalPlayer;
+        var allUnits = FindObjectsByType<PlayerStats>(FindObjectsSortMode.None);
+
+        PlayerStats realKillerUnit = null;
+
+        foreach (var unit in allUnits)
         {
-            engineeringBay.UpgradeUnit(unit, isAttack);
+            if (unit != null && unit.Object != null)
+            {
+                if (unit.Object.InputAuthority == myPlayerRef || unit.Object.InputAuthority == PlayerRef.None || unit.Object.InputAuthority.PlayerId == -1)
+                {
+                    if (unit.Kills > 0)
+                    {
+                        realKillerUnit = unit;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (realKillerUnit != null)
+        {
+            engineeringBay.TryUpgradeUnit(myPlayerRef, realKillerUnit, isAttack);
         }
     }
 }

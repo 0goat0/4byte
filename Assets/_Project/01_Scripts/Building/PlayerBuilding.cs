@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseBuilding
+public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseBuilding, IHealthSource
 {
     [SerializeField] protected BuildingData buildingData;
 
@@ -9,9 +9,14 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseB
     [SerializeField] private Renderer _selectionIndicatorRenderer;
 
     public BuildingData Data => buildingData;
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => buildingData != null ? buildingData.hp : 0f;
+    public event System.Action<float, float> OnHealthChanged;
 
-    [Networked] public int CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] public int CurrentHp { get; set; }
     [Networked] public NetworkBool IsDestroyed { get; set; }
+
+    private WorldHealthBarTarget _healthBarTarget;
 
     public override void Spawned()
     {
@@ -22,6 +27,18 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseB
             CurrentHp = buildingData.hp;
             IsDestroyed = false;
         }
+
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
+    }
+
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
     public void SetSelected(bool isSelected)

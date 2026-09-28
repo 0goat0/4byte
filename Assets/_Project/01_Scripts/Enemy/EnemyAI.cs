@@ -21,9 +21,8 @@ public enum EnemyStateType
     Attack,
     Dead
 }
-public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
+public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable, IHealthSource
 {
-
     [Header("Data")]
     //이름, 크기(소형, 중형, 대형), 공격타입(근접, 원거리, 광역)
     //체력, 공격력, 방어력, 공격속도, 이동속도
@@ -31,6 +30,9 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
     //몬스터 프리펩
     [SerializeField] private EnemyData data;
     public EnemyData Data { get { return data; } }
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => data != null ? data.hp : 0f;
+    public event System.Action<float, float> OnHealthChanged;
     [Header("Detection")]
     [SerializeField] private float attackRange;
     public float AttackRange { get { return attackRange; }}
@@ -58,7 +60,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
     [Networked, OnChangedRender(nameof(OnStateTypeChanged))] 
     public EnemyStateType StateType { get; set; }
     //현재 체력 체크
-    [Networked] public float CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] public float CurrentHp { get; set; }
     //어떤 타겟을 따라가는지 체크
     [Networked] public NetworkObject Target { get; set; }
     //공격 쿨타임 체크
@@ -77,6 +79,7 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
 
     private Dictionary<EnemyStateType, IEnemyState> stateDic;
     private IEnemyState currentState;
+    private WorldHealthBarTarget _healthBarTarget;
 
     [Networked] public int DestinationIndex { get; set; }
     private NavMeshAgent navMeshAgent; // NetworkNavMeshMover와 별개로 참조만 가져옴
@@ -164,7 +167,14 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
         //테스트
         //StartCoroutine(DespawnEnemy());
         currentState.Enter(this);
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
     }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
+    }
+
     //테스트 코드
     IEnumerator DespawnEnemy()
     {
@@ -207,6 +217,11 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
         ApplyStateVisual(StateType);
     }
 
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+    }
+
     private void ApplyStateVisual(EnemyStateType stateType)
     {
         if (Animator == null)
@@ -234,6 +249,12 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
         {
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
+
+            if(attacker != null)
+            {
+                PlayerStats stats =attacker.GetComponent<PlayerStats>();
+                PlayerKill(stats);
+            }
         }
         else
         {
@@ -316,6 +337,15 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable
         // MoveTo()에서 쓰는 것과 같은 방식: 즉시 스냅되도록 Teleport로 회전값 전파
         networkTransform.Teleport(rotation: targetRotation);
     }
+
+    private void PlayerKill(PlayerStats attacker)
+    {
+        if(attacker != null)
+        {
+            attacker.Kills++;
+        }
+    }
+
 
     private void OnDrawGizmosSelected()
     {

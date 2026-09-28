@@ -62,6 +62,13 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private TMP_Text tutorialText;
     [SerializeField] private Button nextButton;
 
+    [Header("카운트다운 UI (화면 상단 중앙 / tutorialCanvas와 별개 오브젝트에 둘 것)")]
+    [SerializeField] private TMP_Text countdownText;
+    [SerializeField] private string firstSpawnFormat = "First Spawn {0} Second";
+    [SerializeField] private string nextWaveFormat = "Next Wave {0} Second";
+    private int lastShownSeconds = -1;
+    private int lastShownMode;
+
     [Header("Tutorial Texts")]
     [TextArea(3, 5)]
     [SerializeField] private List<string> startTexts;
@@ -159,6 +166,52 @@ public class GameManager : NetworkBehaviour
     {
         State = GameManagerState.Preparing;
         StartTimer = TickTimer.CreateFromSeconds(Runner, startDelay);
+    }
+
+    // ───────────── 카운트다운 UI (모든 클라이언트, 매 프레임) ─────────────
+    public override void Render()
+    {
+        if (countdownText == null) return;
+
+        float? remaining = null;
+        string format = null;
+        int mode = 0;
+
+        if (State == GameManagerState.Preparing)
+        {
+            // 게임 시작 후 첫 스포너가 켜지기까지
+            remaining = StartTimer.RemainingTime(Runner);
+            format = firstSpawnFormat;
+            mode = 1;
+        }
+        else if (State == GameManagerState.StageInProgress && StageIndex < stageSpawners.Count)
+        {
+            // 현재 진행 중인 스포너의 다음 웨이브까지
+            IStageSpawner current = stageSpawners[StageIndex];
+            if (!IsStageSpawnerDone(current) && current is EnemySpawner enemySpawner)
+            {
+                remaining = enemySpawner.GetNextWaveRemainingTime();
+                format = nextWaveFormat;
+                mode = 2;
+            }
+        }
+
+        if (remaining == null || format == null)
+        {
+            if (countdownText.gameObject.activeSelf) countdownText.gameObject.SetActive(false);
+            lastShownSeconds = -1;
+            lastShownMode = 0;
+            return;
+        }
+
+        if (!countdownText.gameObject.activeSelf) countdownText.gameObject.SetActive(true);
+
+        int seconds = Mathf.CeilToInt(remaining.Value);
+        if (seconds == lastShownSeconds && mode == lastShownMode) return; // 값이 같으면 갱신 생략
+
+        lastShownSeconds = seconds;
+        lastShownMode = mode;
+        countdownText.text = string.Format(format, seconds);
     }
 
     // ───────────── 진행 로직 (호스트 전용) ─────────────

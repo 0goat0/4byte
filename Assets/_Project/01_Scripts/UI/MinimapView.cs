@@ -2,56 +2,51 @@
 
 public class MinimapView : MonoBehaviour
 {
-    [SerializeField] private Camera mainCamera;
-    [SerializeField] private float minimapLineHeight = 1.0f; //높이(Y축)
+    public Camera playerCamera;
+    public Collider floorCollider;
 
     private LineRenderer lineRenderer;
-    private Vector3[] viewportPoints = new Vector3[3];
-    private Vector3[] worldPoints = new Vector3[3];
 
-    private void Awake()
+    private Vector3[] worldPositions = new Vector3[5];
+
+    public void Start()
     {
-        lineRenderer = GetComponent<LineRenderer>();
+        this.lineRenderer = this.GetComponent<LineRenderer>();
 
-        //모서리 Viewport 좌표 설정
-        viewportPoints[0] = new Vector3(0, 0, 0);
-        viewportPoints[1] = new Vector3(1, 0, 0);
-        viewportPoints[2] = new Vector3(1, 1, 0);
-        viewportPoints[3] = new Vector3(0, 1, 0);
-    }
 
-    private void LateUpdate()
-    {
-        if (mainCamera == null || lineRenderer == null) return;
-
-        UpdateFrustumLines();
-    }
-
-    private void UpdateFrustumLines()
-    {
-
-        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, minimapLineHeight, 0));
-
-        for (int i = 0; i < 4; i++)
+        if (this.floorCollider == null)
         {
-            //화면 모서리 Ray 발사
-            Ray ray = mainCamera.ViewportPointToRay(viewportPoints[i]);
-
-            if (groundPlane.Raycast(ray, out float enter))
-            {
-                worldPoints[i] = ray.GetPoint(enter);
-            }
-            else
-            {
-                worldPoints[i] = mainCamera.transform.position + ray.direction * 50f;
-                worldPoints[i].y = minimapLineHeight;
-            }
+            GameObject floorObject = GameObject.FindGameObjectWithTag("FloorCollider");
+            if (floorObject != null) this.floorCollider = floorObject.GetComponent<Collider>();
         }
 
-        worldPoints[3] = worldPoints[0];
+        this.lineRenderer.positionCount = 5;
+    }
 
-        // Line Renderer에 계산된 4개의 좌표 전달
-        lineRenderer.SetPositions(worldPoints);
+    public void Update()
+    {
+        if (this.playerCamera == null || this.floorCollider == null || this.lineRenderer == null) return;
+
+        Ray bottomLeftCorner = this.playerCamera.ScreenPointToRay(new Vector3(0f, 0f, 0f));
+        Ray bottomRightCorner = this.playerCamera.ScreenPointToRay(new Vector3(Screen.width, 0f, 0f));
+        Ray topRightCorner = this.playerCamera.ScreenPointToRay(new Vector3(Screen.width, Screen.height, 0f));
+        Ray topLeftCorner = this.playerCamera.ScreenPointToRay(new Vector3(0f, Screen.height, 0f));
+
+        RaycastHit hit;
+        // 월드좌표
+        if (this.floorCollider.Raycast(bottomLeftCorner, out hit, 1500f)) worldPositions[0] = hit.point;
+        if (this.floorCollider.Raycast(bottomRightCorner, out hit, 1500f)) worldPositions[1] = hit.point;
+        if (this.floorCollider.Raycast(topRightCorner, out hit, 1500f)) worldPositions[2] = hit.point;
+        if (this.floorCollider.Raycast(topLeftCorner, out hit, 1500f)) worldPositions[3] = hit.point;
+
+        worldPositions[4] = worldPositions[0];
+
+        // 선 위치설정
+        for (int i = 0; i < worldPositions.Length; i++)
+        {
+            worldPositions[i].y += 10f;
+        }
+
+        this.lineRenderer.SetPositions(worldPositions);
     }
 }
-

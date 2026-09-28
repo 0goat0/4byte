@@ -13,6 +13,12 @@ public interface IStageSpawner
     void SetSpawnerActive(bool active);
 }
 
+// 플레이어 베이스 건물이 구현 (전부 파괴되면 게임 패배)
+public interface IBaseBuilding
+{
+    NetworkBool IsDestroyed { get; }
+}
+
 public enum GameManagerState
 {
     WaitingForTutorial, // (옵션) 튜토리얼 종료 대기
@@ -45,6 +51,10 @@ public class GameManager : NetworkBehaviour
     [Networked] private TickTimer StartTimer { get; set; }
 
     private EnemyAI bossEnemyAI;
+
+    [Header("패배 조건: 여기 등록한 플레이어 건물이 전부 파괴되면 게임 오버")]
+    [SerializeField] private MonoBehaviour[] playerBuildingBehaviours;
+    private readonly List<IBaseBuilding> playerBuildings = new List<IBaseBuilding>();
 
     // ───────────── 튜토리얼 UI (로컬) ─────────────
     [Header("UI")]
@@ -94,6 +104,25 @@ public class GameManager : NetworkBehaviour
             else
             {
                 Debug.LogWarning($"[GameManager] {b.name}({b.GetType().Name})에서 IStageSpawner를 찾지 못함");
+            }
+        }
+
+        playerBuildings.Clear();
+        foreach (var b in playerBuildingBehaviours)
+        {
+            if (b == null) continue;
+
+            if (b is IBaseBuilding building)
+            {
+                playerBuildings.Add(building);
+            }
+            else if (b.TryGetComponent(out IBaseBuilding found))
+            {
+                playerBuildings.Add(found);
+            }
+            else
+            {
+                Debug.LogWarning($"[GameManager] {b.name}({b.GetType().Name})에서 IBaseBuilding을 찾지 못함");
             }
         }
     }
@@ -149,10 +178,12 @@ public class GameManager : NetworkBehaviour
 
             case GameManagerState.StageInProgress:
                 TickStageProgress();
+                CheckAllPlayerBuildingsDestroyed();
                 break;
 
             case GameManagerState.BossStage:
                 TickBossStage();
+                CheckAllPlayerBuildingsDestroyed();
                 break;
         }
     }
@@ -189,6 +220,33 @@ public class GameManager : NetworkBehaviour
             State = GameManagerState.Cleared;
             Debug.Log("[GameManager] 보스 처치 - 게임 클리어");
         }
+    }
+
+    private bool IsPlayerBuildingDestroyed(IBaseBuilding b)
+    {
+        if (b is NetworkBehaviour nb)
+        {
+            if (nb == null) return true;                                // Unity에서 Destroy됨
+            if (nb.Object == null || !nb.Object.IsValid) return true;   // Fusion에서 디스폰됨
+        }
+        return b.IsDestroyed;
+    }
+
+    // 등록된 플레이어 건물이 전부 파괴되면 게임 오버
+    private void CheckAllPlayerBuildingsDestroyed()
+    {
+        if (playerBuildings.Count == 0) return; // 등록 안 했으면 판정 안 함
+
+        // 같은 틱에 보스 클리어가 먼저 처리됐다면 덮어쓰지 않음
+        if (State != GameManagerState.StageInProgress && State != GameManagerState.BossStage) return;
+
+        foreach (var b in playerBuildings)
+        {
+            if (!IsPlayerBuildingDestroyed(b)) return; // 하나라도 살아있으면 계속 진행
+        }
+
+        State = GameManagerState.GameOver;
+        Debug.Log("[GameManager] 플레이어 건물 전부 파괴 - 게임 오버");
     }
 
     public void RegisterBoss(NetworkObject bossObject)

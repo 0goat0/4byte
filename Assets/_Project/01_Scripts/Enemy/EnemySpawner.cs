@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Unity.Collections.Unicode;
 
-public class EnemySpawner : NetworkBehaviour, IDamageable
+public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
 {
     [SerializeField] private NetworkObject enemyPrefab;
 
@@ -14,7 +13,7 @@ public class EnemySpawner : NetworkBehaviour, IDamageable
     [Networked] public NetworkBool IsDestroyed { get; set; }
 
     [Header("On/Off (GameManager가 단계별로 제어)")]
-    [SerializeField] private bool startActive = true; // 시작 시 켜진 상태로 시작할지 여부
+    [SerializeField] private bool startActive = false; // 시작 시 켜진 상태로 시작할지 여부
     [Networked] public NetworkBool IsActive { get; set; }
 
 

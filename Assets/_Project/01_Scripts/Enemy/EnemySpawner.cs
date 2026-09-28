@@ -3,14 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
+public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealthSource
 {
     [SerializeField] private NetworkObject enemyPrefab;
 
     [Header("Spawner Health")]
     [SerializeField] private float maxHp = 100f;
-    [Networked] private float CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] private float CurrentHp { get; set; }
     [Networked] public NetworkBool IsDestroyed { get; set; }
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => maxHp;
+    public event System.Action<float, float> OnHealthChanged;
 
     [Header("On/Off (GameManager가 단계별로 제어)")]
     [SerializeField] private bool startActive = false; // 시작 시 켜진 상태로 시작할지 여부
@@ -41,6 +44,8 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
     [Networked] private TickTimer WaveTimer { get; set; }
     [Networked] private TickTimer BurstTimer { get; set; }
     [Networked] private int RemainingInBurst { get; set; }
+    private WorldHealthBarTarget _healthBarTarget;
+
     public override void Spawned()
     {
         if (HasStateAuthority)
@@ -48,6 +53,8 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
             CurrentHp = maxHp;
             IsActive = startActive;
         }
+
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
 
         // Runner의 GameObject에서 PooledNetworkObjectProvider 컴포넌트를 찾아옴
         var pooledProvider = Runner.GetComponent<PooledNetworkObjectProvider>();
@@ -68,6 +75,17 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
             //} 
         }
     }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
+    }
+
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+    }
+
     public override void FixedUpdateNetwork()
     {
         if (!HasStateAuthority)

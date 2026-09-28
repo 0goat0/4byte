@@ -20,7 +20,7 @@ public enum PlayerStateType
     Dead
 }
 
-public class PlayerStats : NetworkBehaviour, IDamageable
+public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
 {
     [Header("Data")]
     //이름, 크기(소형, 중형, 대형), 공격타입(근접, 원거리, 광역)
@@ -29,6 +29,9 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //몬스터 프리펩
     [SerializeField] private PlayerData data;
     public PlayerData Data => data;
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => data != null ? data.hp : 0f;
+    public event System.Action<float, float> OnHealthChanged;
 
     //[Networked, OnChangedRender(nameof(OnPlayerNameChanged))]
     //public NetworkString<_32> playerName { get; set; }
@@ -57,7 +60,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     //상태 체크
     [Networked, OnChangedRender(nameof(OnStateTypeChanged))]
     public PlayerStateType StateType { get; private set; }
-    [Networked] public float CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] public float CurrentHp { get; set; }
     [Networked] public NetworkObject Target { get; set; }
     [Networked] public TickTimer AttackCooldown { get; set; } // 쿨타임 타이머
     [Networked] public TickTimer DetectTimer { get; set; }
@@ -75,6 +78,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     private readonly Collider[] _targetResults = new Collider[TargetBufferCapacity];
     private Dictionary<PlayerStateType, IPlayerState> _states;
     private IPlayerState _currentState;
+    private WorldHealthBarTarget _healthBarTarget;
 
     private void Awake()
     {
@@ -116,6 +120,8 @@ public class PlayerStats : NetworkBehaviour, IDamageable
 
         ApplyStateVisual(StateType);
 
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
+
         #region Name
         //if (Object.HasInputAuthority)
         //{
@@ -133,6 +139,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable
         //    UpdateNameUI(string.IsNullOrEmpty(currentNetName) ? "Connecting..." : currentNetName);
         //}
         #endregion
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
     }
 
     public override void FixedUpdateNetwork()
@@ -212,6 +223,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable
     private void OnStateTypeChanged()
     {
         ApplyStateVisual(StateType);
+    }
+
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
     private void ApplyStateVisual(PlayerStateType stateType)

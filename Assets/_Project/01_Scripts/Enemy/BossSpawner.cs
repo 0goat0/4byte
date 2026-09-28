@@ -5,7 +5,7 @@ using UnityEngine;
 // 이 건물이 파괴되면(HP 0) 지정된 보스 프리팹을 1마리 스폰
 // 보스 프리팹은 기존 EnemyAI/EnemyData/상태머신을 그대로 재사용해도 되고,
 // 필요하면 보스 전용 EnemyData(체력/공격력만 크게)만 새로 만들면 됌.
-public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner
+public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealthSource
 {
     [Header("Boss Prefab")]
     [SerializeField] private NetworkObject bossPrefab;
@@ -15,11 +15,16 @@ public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner
 
     [Header("Building Health")]
     [SerializeField] private float maxHp;
-    [Networked] private float CurrentHp { get; set; }
+    [Networked, OnChangedRender(nameof(OnCurrentHpChanged))] private float CurrentHp { get; set; }
+    public float CurrentHealth => CurrentHp;
+    public float MaxHealth => maxHp;
+    public event System.Action<float, float> OnHealthChanged;
 
     // 건물이 파괴되었는지 여부 (다른 클라이언트/시스템에서 참조 가능하도록 공개)
     [Networked] public NetworkBool IsDestroyed { get; set; }
     [Networked] public NetworkBool IsActive { get; set; }
+
+    private WorldHealthBarTarget _healthBarTarget;
 
     public override void Spawned()
     {
@@ -31,6 +36,8 @@ public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner
             IsActive = false;
         }
 
+        _healthBarTarget = WorldHealthBarTarget.Attach(gameObject, this);
+
         var pooledProvider = Runner.GetComponent<PooledNetworkObjectProvider>();
 
         if (pooledProvider != null)
@@ -39,6 +46,16 @@ public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner
             pooledProvider.Prewarm(Runner, bossPrefab, 1);
         }
 
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        _healthBarTarget?.Release();
+    }
+
+    private void OnCurrentHpChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
     }
 
     public void TakeDamage(float damage, NetworkObject attacker)

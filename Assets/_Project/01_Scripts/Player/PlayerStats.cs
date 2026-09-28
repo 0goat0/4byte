@@ -80,6 +80,19 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
     private IPlayerState _currentState;
     private WorldHealthBarTarget _healthBarTarget;
 
+    [OnChangedRender(nameof(OnKillsChanged))]
+    [Networked] public int Kills { get; set; }
+    [Networked] public int AttackLevel { get; set; }
+    [Networked] public int DefenseLevel { get; set; }
+
+    private void OnKillsChanged()
+    {
+        var ui = FindAnyObjectByType<PlayerStatsUI>();
+        if (ui != null)
+        {
+            ui.UpdateTotalKillUI();
+        }
+    }
     private void Awake()
     {
         Mover = GetComponent<NetworkNavMeshMover>();
@@ -87,6 +100,12 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
     }
     public override void Spawned()
     {
+        var ui = FindAnyObjectByType<PlayerStatsUI>();
+        if (ui != null)
+        {
+            ui.UpdateTotalKillUI();
+        }
+
         _states = new Dictionary<PlayerStateType, IPlayerState>
         {
             { PlayerStateType.Idle, new PlayerIdleState() },
@@ -208,7 +227,6 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
 
         if (!_states.TryGetValue(stateType, out IPlayerState nextState))
         {
-            Debug.LogError($"등록되지 않은 상태입니다: {stateType}", this);
             return;
         }
 
@@ -253,7 +271,7 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
             this.defense += 1f;
         }
 
-        Debug.Log($"[서버] {gameObject.name} 스탯 강화 완료! 현재 공격력: {this.attackDamage}, 방어력: {this.defense}");
+        Debug.Log($"업그레이드 완료");
     }
     public void CommandMove(Vector3 destination)
     {
@@ -337,11 +355,11 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
 
     public void TakeDamage(float damage, NetworkObject attacker)
     {
-        //접근 권한은 호스트에게
         if (!HasStateAuthority || StateType == PlayerStateType.Dead)
             return;
 
-        CurrentHp -= damage;
+        float finalDamage = Mathf.Max((int)damage - data.defense, 1f);
+        CurrentHp = Mathf.Clamp(CurrentHp - finalDamage, 0, data.hp);
 
         if (CurrentHp <= 0f)
         {

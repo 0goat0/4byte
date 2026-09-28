@@ -185,6 +185,7 @@ MonoBehaviour:
   _selectionIndicatorRenderer: {fileID: 0}
   _CurrentHp: 1000
   _IsDestroyed: 0
+  upgradeCost: 1
 --- !u!114 &4491570710374347099
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -249,6 +249,12 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable, IHealthSource
         {
             CurrentHp = 0f;
             ChangeState(EnemyStateType.Dead);
+
+            if(attacker != null)
+            {
+                PlayerStats stats =attacker.GetComponent<PlayerStats>();
+                PlayerKill(stats);
+            }
         }
         else
         {
@@ -331,6 +337,15 @@ public class EnemyAI : NetworkBehaviour, IDamageable, ISelectable, IHealthSource
         // MoveTo()에서 쓰는 것과 같은 방식: 즉시 스냅되도록 Teleport로 회전값 전파
         networkTransform.Teleport(rotation: targetRotation);
     }
+
+    private void PlayerKill(PlayerStats attacker)
+    {
+        if(attacker != null)
+        {
+            attacker.Kills++;
+        }
+    }
+
 
     private void OnDrawGizmosSelected()
     {

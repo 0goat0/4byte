@@ -244,6 +244,10 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner
         {
             return;
         }
+        if (!IsActive)
+        {
+            return;
+        }
 
         CurrentHp -= damage;
         if (CurrentHp <= 0f)

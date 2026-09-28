@@ -14,6 +14,7 @@ public class PlayerInteractionController : MonoBehaviour
     [SerializeField] private LayerMask _groundMask;
     [SerializeField] private LayerMask _enemyMask;
     [SerializeField] private LayerMask _uiMask;
+    [SerializeField] private LayerMask _selectionMask;
 
     private void OnEnable()
     {
@@ -33,7 +34,7 @@ public class PlayerInteractionController : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(pointerPosition);
 
-        if (!Physics.Raycast(ray, out RaycastHit hitInfo))
+        if (!Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, _selectionMask))
         {
             // 공격 모드에서 빈 곳을 클릭했을 때 선택 유닛이 초기화되는 것을 방지
             if (playerState.Mode == PlayerInteractionMode.Default)

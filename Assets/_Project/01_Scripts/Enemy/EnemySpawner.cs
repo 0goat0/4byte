@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealthSource
+public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, ISelectable, IHealthSource
 {
     [SerializeField] private NetworkObject enemyPrefab;
+
+    [Header("Selection")]
+    [SerializeField] private Renderer _selectionIndicatorRenderer;
 
     [Header("Spawner Health")]
     [SerializeField] private float maxHp = 100f;
@@ -48,6 +51,8 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealt
 
     public override void Spawned()
     {
+        SetSelected(false);
+
         if (HasStateAuthority)
         {
             CurrentHp = maxHp;
@@ -84,6 +89,14 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealt
     private void OnCurrentHpChanged()
     {
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+    }
+
+    public void SetSelected(bool isSelected)
+    {
+        if (_selectionIndicatorRenderer == null)
+            return;
+
+        _selectionIndicatorRenderer.enabled = isSelected;
     }
 
     public override void FixedUpdateNetwork()

@@ -5,10 +5,13 @@ using UnityEngine;
 // 이 건물이 파괴되면(HP 0) 지정된 보스 프리팹을 1마리 스폰
 // 보스 프리팹은 기존 EnemyAI/EnemyData/상태머신을 그대로 재사용해도 되고,
 // 필요하면 보스 전용 EnemyData(체력/공격력만 크게)만 새로 만들면 됌.
-public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealthSource
+public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner, ISelectable, IHealthSource
 {
     [Header("Boss Prefab")]
     [SerializeField] private NetworkObject bossPrefab;
+
+    [Header("Selection")]
+    [SerializeField] private Renderer _selectionIndicatorRenderer;
 
     // 지정하지 않으면 이 건물의 위치에서 스폰
     [SerializeField] private Transform spawnPoint;
@@ -28,6 +31,8 @@ public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealth
 
     public override void Spawned()
     {
+        SetSelected(false);
+
         // 호스트만 초기 체력 설정
         if (HasStateAuthority)
         {
@@ -56,6 +61,14 @@ public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner, IHealth
     private void OnCurrentHpChanged()
     {
         OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+    }
+
+    public void SetSelected(bool isSelected)
+    {
+        if (_selectionIndicatorRenderer == null)
+            return;
+
+        _selectionIndicatorRenderer.enabled = isSelected;
     }
 
     public void TakeDamage(float damage, NetworkObject attacker)

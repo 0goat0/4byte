@@ -5,7 +5,7 @@ using UnityEngine;
 // 이 건물이 파괴되면(HP 0) 지정된 보스 프리팹을 1마리 스폰
 // 보스 프리팹은 기존 EnemyAI/EnemyData/상태머신을 그대로 재사용해도 되고,
 // 필요하면 보스 전용 EnemyData(체력/공격력만 크게)만 새로 만들면 됌.
-public class BossSpawner : NetworkBehaviour, IDamageable
+public class BossSpawner : NetworkBehaviour, IDamageable, IStageSpawner
 {
     [Header("Boss Prefab")]
     [SerializeField] private NetworkObject bossPrefab;
@@ -19,6 +19,7 @@ public class BossSpawner : NetworkBehaviour, IDamageable
 
     // 건물이 파괴되었는지 여부 (다른 클라이언트/시스템에서 참조 가능하도록 공개)
     [Networked] public NetworkBool IsDestroyed { get; set; }
+    [Networked] public NetworkBool IsActive { get; set; }
 
     public override void Spawned()
     {
@@ -27,6 +28,7 @@ public class BossSpawner : NetworkBehaviour, IDamageable
         {
             CurrentHp = maxHp;
             IsDestroyed = false;
+            IsActive = false;
         }
 
         var pooledProvider = Runner.GetComponent<PooledNetworkObjectProvider>();
@@ -51,7 +53,10 @@ public class BossSpawner : NetworkBehaviour, IDamageable
         {
             return;
         }
-
+        if (!IsActive) 
+        {
+            return;
+        }
         CurrentHp -= damage;
         if (CurrentHp <= 0f)
         {
@@ -59,7 +64,12 @@ public class BossSpawner : NetworkBehaviour, IDamageable
             OnBuildingDestroyed();
         }
     }
-
+    public void SetSpawnerActive(bool active)
+    {
+        if (!HasStateAuthority) return;
+        if (IsDestroyed) return;
+        IsActive = active;
+    }
     private void OnBuildingDestroyed()
     {
         if (IsDestroyed)
@@ -88,6 +98,11 @@ public class BossSpawner : NetworkBehaviour, IDamageable
 
         Vector3 pos = spawnPoint != null ? spawnPoint.position : transform.position;
 
-        Runner.Spawn(bossPrefab, pos, Quaternion.identity);
+        NetworkObject bossObj = Runner.Spawn(bossPrefab, pos, Quaternion.identity);
+
+        // GameManager에게 "보스가 스폰됐다" 알림 → 사망 감시 시작
+        GameManager.Instance?.RegisterBoss(bossObj);
+
+
     }
 }

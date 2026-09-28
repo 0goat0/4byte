@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f088903508f98a742933cfdc9b1b3016, type: 3}
-  m_Name: TestBoss
+  m_Name: Enemy1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: TestBoss
+  enemyName: Enemy1
   size: 0
   attackType: 0
-  hp: 50000
-  attack: 180
-  defense: 10
-  attackSpeed: 10
-  moveSpeed: 10
-  goldDrop: 10
-  Prefab: {fileID: 5658868517289352571, guid: 2b35ecac3fbf1434793de9445e4a8b80, type: 3}
+  hp: 500
+  attack: 50
+  defense: 0
+  attackSpeed: 0
+  moveSpeed: 0
+  goldDrop: 0
+  Prefab: {fileID: 0}

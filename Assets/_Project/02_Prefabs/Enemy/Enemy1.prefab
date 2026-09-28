@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f01d78402e1ac4341b5e845eec1c600c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
-  data: {fileID: 11400000, guid: c3b9c52fda16bf140aa57ea4918f58d7, type: 2}
+  data: {fileID: 11400000, guid: c22d0af7fff36c042a30db394cafcc1d, type: 2}
   attackRange: 4
   detectRange: 10
   targetLayerMask:

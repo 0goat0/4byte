@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BuildingData_Turret
   m_EditorClassIdentifier: Assembly-CSharp::BuildingData
   buildingName: Turret
-  hp: 500
+  hp: 5000
   attackDamage: 10
   defense: 2
   attackSpeed: 5

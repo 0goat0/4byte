@@ -66,7 +66,7 @@ public class GameManager : NetworkBehaviour
     [Header("종료 메시지 / 씬")]
     [SerializeField] private string clearMessage = "Congratulations! You have completed the tutorial by defeating the boss";
     [SerializeField] private string gameOverMessage = "Game Over";
-    [SerializeField] private float exitDelay = 2f;
+    [SerializeField] private float exitDelay = 10f;
     [SerializeField] private string nextSceneName = "MainMenuScene";
 
     private int currentTextIndex;

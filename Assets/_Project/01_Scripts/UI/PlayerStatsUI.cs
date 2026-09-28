@@ -108,7 +108,7 @@ public class PlayerStatsUI : NetworkBehaviour
             return;
         }
 
-        // 1. 선택된 대상이 아군 유닛인지 확인
+        // 아군 유닛 확인
         _trackedUnit = target.GetComponentInParent<PlayerStats>(true);
 
         if (_trackedUnit != null)
@@ -190,7 +190,7 @@ public class PlayerStatsUI : NetworkBehaviour
         {
             if (kvp.Key == localPlayerId)
             {
-                sb.Append($"<b>player {kvp.Key} : {kvp.Value} (You)");
+                sb.Append($"<b>Total : {kvp.Value} (Kill)");
             }
             else
             {

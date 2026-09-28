@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -40,6 +41,9 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
     public event Action<string> OnRoomEntered;
     public event Action OnRoomExited;
     public event Action OnRoomPlayersChanged;
+
+    [SerializeField] private TextMeshProUGUI warningText;
+    private int _warningCount = 0;
 
     private void Awake()
     {
@@ -148,6 +152,11 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (!isInLobby)
         {
+            if(warningText !=null)
+            {
+                warningText.text = "Connecting... Please wait a moment.";
+                _ = ClearWarningTextAsync();
+            }
             Debug.LogWarning("아직 로비가 아닙니다");
             return;
         }
@@ -366,7 +375,18 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
         Debug.Log($"호스트 연결 종료 : {reason}");
         ExitRoom();
     }
+    private async Task ClearWarningTextAsync()
+    {
+        _warningCount++;
+        int currentCount = _warningCount;
 
+        await Task.Delay(1000);
+
+        if (currentCount == _warningCount && warningText != null)
+        {
+            warningText.text = "";
+        }
+    }
     public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken){ }
     public void OnConnectedToServer(NetworkRunner runner) { }
     public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }

@@ -13,12 +13,6 @@ public interface IStageSpawner
     void SetSpawnerActive(bool active);
 }
 
-// 전원 사망 판정용 (플레이어 스크립트가 구현)
-public interface IPlayerLifeState
-{
-    bool IsAlive { get; }
-}
-
 public enum GameManagerState
 {
     WaitingForTutorial, // (옵션) 튜토리얼 종료 대기
@@ -51,7 +45,6 @@ public class GameManager : NetworkBehaviour
     [Networked] private TickTimer StartTimer { get; set; }
 
     private EnemyAI bossEnemyAI;
-    private readonly List<IPlayerLifeState> players = new List<IPlayerLifeState>();
 
     // ───────────── 튜토리얼 UI (로컬) ─────────────
     [Header("UI")]
@@ -75,7 +68,7 @@ public class GameManager : NetworkBehaviour
     // ───────────── 초기화 ─────────────
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -156,12 +149,10 @@ public class GameManager : NetworkBehaviour
 
             case GameManagerState.StageInProgress:
                 TickStageProgress();
-                CheckAllPlayersDead();
                 break;
 
             case GameManagerState.BossStage:
                 TickBossStage();
-                CheckAllPlayersDead();
                 break;
         }
     }
@@ -200,25 +191,10 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private void CheckAllPlayersDead()
-    {
-        if (players.Count == 0) return;
-
-        foreach (var p in players)
-        {
-            if (p != null && p.IsAlive) return;
-        }
-        State = GameManagerState.GameOver;
-        Debug.Log("[GameManager] 전멸 - 게임 오버");
-    }
-
     public void RegisterBoss(NetworkObject bossObject)
     {
         if (bossObject != null) bossEnemyAI = bossObject.GetComponent<EnemyAI>();
     }
-
-    public void RegisterPlayer(IPlayerLifeState p) { if (!players.Contains(p)) players.Add(p); }
-    public void UnregisterPlayer(IPlayerLifeState p) { players.Remove(p); }
 
     // 튜토리얼 종료 후 카운트다운 시작 (startCountdownAfterTutorial 옵션용)
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -1,9 +1,12 @@
 ﻿using Fusion;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetworkParty : NetworkBehaviour
 {
+    public static event Action<Transform> OnLocalCameraTargetRequested;
+
     public const int MaxMemberCount = 3;
 
     [Networked, Capacity(MaxMemberCount)]
@@ -18,6 +21,23 @@ public class NetworkParty : NetworkBehaviour
             return null;
 
         return Members.Get(index);
+    }
+
+    public void RequestInitialCameraTarget(PartyMember member)
+    {
+        if (!Object.HasStateAuthority || member == null)
+            return;
+
+        RPC_SetInitialCameraTarget(member.Object);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    private void RPC_SetInitialCameraTarget(NetworkObject memberObject)
+    {
+        if (memberObject == null)
+            return;
+
+        OnLocalCameraTargetRequested?.Invoke(memberObject.transform);
     }
 
     public bool ContainsMember(PartyMember member)

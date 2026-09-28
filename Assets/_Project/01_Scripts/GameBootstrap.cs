@@ -102,6 +102,7 @@ public class GameBootstrap : MonoBehaviour, INetworkRunnerCallbacks
 
         // runner.SetPlayerObject(player, partyObject);
         _spawnedParties[player].Add(party);
+        party.RequestInitialCameraTarget(partyMember);
 
         Debug.Log($"Party Spawned for Player: {player.PlayerId}");
     }

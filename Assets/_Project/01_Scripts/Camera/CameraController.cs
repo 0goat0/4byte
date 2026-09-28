@@ -39,6 +39,7 @@ public class CameraController : MonoBehaviour
         // 카메라 입력 이벤트 등록
         inputReader.ZoomRequested += HandleZoom;
         inputReader.FocusSelectionRequested += HandleFocusSelection;
+        NetworkParty.OnLocalCameraTargetRequested += HandleCameraTargetRequested;
     }
 
     private void OnDisable()
@@ -46,6 +47,15 @@ public class CameraController : MonoBehaviour
         // 카메라 입력 이벤트 해제
         inputReader.ZoomRequested -= HandleZoom;
         inputReader.FocusSelectionRequested -= HandleFocusSelection;
+        NetworkParty.OnLocalCameraTargetRequested -= HandleCameraTargetRequested;
+    }
+
+    private void HandleCameraTargetRequested(Transform requestedTarget)
+    {
+        if (requestedTarget == null)
+            return;
+
+        target = requestedTarget;
     }
 
     private void Update()

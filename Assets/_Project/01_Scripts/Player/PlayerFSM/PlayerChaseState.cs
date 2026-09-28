@@ -28,9 +28,9 @@ public class PlayerChaseState : IPlayerState
         }
 
         Vector3 targetPosition = player.Target.transform.position;
-        float distanceSqr = (targetPosition - player.transform.position).sqrMagnitude;
+        float distanceSqr = DistanceUtil.GetDistanceToTarget(player.transform.position, player.Target);
 
-        if (distanceSqr <= player.AttackRange * player.AttackRange)
+        if (distanceSqr <= player.AttackRange)
         {
             player.ChangeState(PlayerStateType.Attack);
             return;

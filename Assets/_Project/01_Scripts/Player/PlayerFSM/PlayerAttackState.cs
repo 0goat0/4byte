@@ -17,11 +17,9 @@ public class PlayerAttackState : IPlayerState
             return;
         }
 
-        float distanceSqr =
-            (player.Target.transform.position - player.transform.position)
-            .sqrMagnitude;
+        float distanceSqr = DistanceUtil.GetDistanceToTarget(player.transform.position, player.Target);
 
-        if (distanceSqr > player.AttackRange * player.AttackRange)
+        if (distanceSqr > player.AttackRange)
         {
             player.ChangeState(PlayerStateType.Chase);
             return;

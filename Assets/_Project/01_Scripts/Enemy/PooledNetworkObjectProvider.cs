@@ -10,7 +10,7 @@ using UnityEngine;
 public class PooledNetworkObjectProvider : NetworkObjectProviderDefault
 {
     // 프리팹 하나당 최대 몇 개까지 풀(보관함)에 쌓아둘지 정하는 값
-    private int maxPoolCount = 20;
+    private int maxPoolCount = 100;
 
     // 프리팹(원본) 별로 "재사용 가능한 오브젝트 목록(Queue)"을 저장하는 사전(Dictionary)
     // key: 프리팹, value: 그 프리팹으로 만들어진 오브젝트들을 담은 큐(대기줄)

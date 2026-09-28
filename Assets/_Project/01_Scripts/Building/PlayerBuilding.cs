@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseBuilding, IHealthSource
+public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseBuilding, IHealthSource, IHealable
 {
     [SerializeField] protected BuildingData buildingData;
 
@@ -48,14 +48,29 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseB
 
         _selectionIndicatorRenderer.enabled = isSelected;
     }
+    // HealZone이 호출: 내가 소유자면 직접, 아니면 소유자에게 요청
+    public void Heal(float amount)
+    {
+        if (HasStateAuthority) TakeDamage(-amount, null);
+        else RpcHeal(amount);
+    }
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RpcHeal(float amount)
+    {
+        TakeDamage(-amount, null);
+    }
     public void TakeDamage(float damage, NetworkObject attacker)
     {
         if (!HasStateAuthority || IsDestroyed) return;
-
+        if (damage < 0f) // 회복
+        {
+            CurrentHp = Mathf.CeilToInt(Mathf.Min(CurrentHp - damage, MaxHealth)); // 최대 체력 초과 방지
+            return;
+        }
         int finalDamage = Mathf.Max((int)damage - buildingData.defense, 1);
         CurrentHp = Mathf.Clamp(CurrentHp - finalDamage, 0, buildingData.hp);
-
+       
         if (CurrentHp <= 0)
         {
             DestroyBuilding();

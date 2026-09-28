@@ -20,7 +20,7 @@ public enum PlayerStateType
     Dead
 }
 
-public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
+public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource, IHealable
 {
     [Header("Data")]
     //이름, 크기(소형, 중형, 대형), 공격타입(근접, 원거리, 광역)
@@ -352,15 +352,29 @@ public class PlayerStats : NetworkBehaviour, IDamageable, IHealthSource
 
         return target != null;
     }
+    public void Heal(float amount)
+    {
+        if (HasStateAuthority) TakeDamage(-amount, null);
+        else RpcHeal(amount);
+    }
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    private void RpcHeal(float amount)
+    {
+        TakeDamage(-amount, null);
+    }
     public void TakeDamage(float damage, NetworkObject attacker)
     {
         if (!HasStateAuthority || StateType == PlayerStateType.Dead)
             return;
-
+        if (damage < 0f) // 회복
+        {
+            CurrentHp = Mathf.Min(CurrentHp - damage, MaxHealth); // 최대 체력 초과 방지
+            return;
+        }
         float finalDamage = Mathf.Max((int)damage - data.defense, 1f);
         CurrentHp = Mathf.Clamp(CurrentHp - finalDamage, 0, data.hp);
-
+       
         if (CurrentHp <= 0f)
         {
             CurrentHp = 0f;

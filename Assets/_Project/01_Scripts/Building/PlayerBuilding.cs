@@ -1,7 +1,7 @@
 ﻿using Fusion;
 using UnityEngine;
 
-public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable
+public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable, IBaseBuilding
 {
     [SerializeField] protected BuildingData buildingData;
 
@@ -11,7 +11,7 @@ public class PlayerBuilding : NetworkBehaviour, ISelectable, IDamageable
     public BuildingData Data => buildingData;
 
     [Networked] public int CurrentHp { get; set; }
-    [Networked] public bool IsDestroyed { get; set; }
+    [Networked] public NetworkBool IsDestroyed { get; set; }
 
     public override void Spawned()
     {

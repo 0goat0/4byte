@@ -10,7 +10,7 @@ public class GameBootstrap : MonoBehaviour, INetworkRunnerCallbacks
     [Header("Player Spawn")]
     [SerializeField] private NetworkObject _partyPrefab;
     [SerializeField] private NetworkObject _initialUnitPrefab;
-    [SerializeField] private Vector3 _spawnOrigin = new Vector3(8f, 0f, -8f);
+    [SerializeField] private Vector3 _spawnOrigin = new Vector3(8f, 0.5f, -8f);
     [SerializeField] private float _spawnSpacing = 2f;
 
     // 플레이어 리스트 관리 (참조용)

@@ -300,4 +300,14 @@ public class EnemySpawner : NetworkBehaviour, IDamageable, IStageSpawner, ISelec
         // 오브젝트 자체를 없앰
         Runner.Despawn(Object);
     }
+
+    public float? GetNextWaveRemainingTime()
+    {
+        if (IsDestroyed || !IsActive) return null;
+        if (RemainingInWave > 0) return null; // 웨이브 소환 진행 중
+
+        float? remaining = WaveTimer.RemainingTime(Runner);
+        if (remaining == null || remaining <= 0f) return null;
+        return remaining;
+    }
 }

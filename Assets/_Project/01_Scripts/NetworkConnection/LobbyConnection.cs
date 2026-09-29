@@ -20,7 +20,7 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
 
     [Header("Session List")]
     [SerializeField] private GameObject _roomListPanel;
-    [SerializeField] private Button _refreshButton;
+
     [SerializeField] private Transform _sessionListContent;
     [SerializeField] private GameObject _sessionEntryPrefab;
     private List<SessionInfo> _sessions = new List<SessionInfo>();
@@ -52,7 +52,7 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
         else
             Destroy(gameObject);
 
-        _refreshButton.onClick.AddListener(RefreshSessionListUI);
+
     }
 
     private void OnDestroy()
@@ -60,10 +60,7 @@ public class LobbyConnection : MonoBehaviour, INetworkRunnerCallbacks
         if (_currentRunner != null)
             _currentRunner.RemoveCallbacks(this);
 
-        if (_refreshButton != null)
-        {
-            _refreshButton.onClick.RemoveAllListeners();
-        }
+
 
         if (Instance == this)
             Instance = null;

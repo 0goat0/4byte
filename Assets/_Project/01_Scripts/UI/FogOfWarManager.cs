@@ -95,7 +95,6 @@ public class FogOfWarManager : MonoBehaviour
                 if (state == 0)
                     pixels[index] = Color.black;
                 else if (state == 1)
-                    //pixels[index] = Color.gray; // Optional make grey pixels
                     pixels[index] = Color.clear;
                 else
                     pixels[index] = Color.clear;

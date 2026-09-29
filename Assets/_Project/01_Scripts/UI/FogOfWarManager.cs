@@ -79,7 +79,6 @@ public class FogOfWarManager : MonoBehaviour
             }
         }
 
-        // Reveal from all units
         foreach (Transform t in fogRevealers)
         {
             RevealCircle(WorldToTex(t.position), visionRadius);

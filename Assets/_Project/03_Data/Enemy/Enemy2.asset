@@ -15,8 +15,8 @@ MonoBehaviour:
   enemyName: Enemy2
   size: 0
   attackType: 0
-  hp: 2500
-  attack: 125
+  hp: 500
+  attack: 20
   defense: 0
   attackSpeed: 0
   moveSpeed: 0

@@ -15,8 +15,8 @@ MonoBehaviour:
   enemyName: TestBoss
   size: 0
   attackType: 0
-  hp: 50000
-  attack: 180
+  hp: 1000
+  attack: 50
   defense: 10
   attackSpeed: 10
   moveSpeed: 10

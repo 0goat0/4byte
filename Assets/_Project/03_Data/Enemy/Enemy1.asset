@@ -16,7 +16,7 @@ MonoBehaviour:
   size: 0
   attackType: 0
   hp: 500
-  attack: 50
+  attack: 20
   defense: 0
   attackSpeed: 0
   moveSpeed: 0

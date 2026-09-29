@@ -15,8 +15,8 @@ MonoBehaviour:
   PlayerName: 
   size: 0
   attackType: 0
-  hp: 1000
-  attack: 30
+  hp: 5000
+  attack: 500
   defense: 2
   attackSpeed: 10
   moveSpeed: 5
